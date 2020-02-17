@@ -1,12 +1,12 @@
-package net.kingingo.server.counter;
+package net.kingingo.server.countdown;
 
 import net.kingingo.server.Main;
 import net.kingingo.server.event.EventHandler;
 import net.kingingo.server.event.EventListener;
 import net.kingingo.server.event.EventManager;
 import net.kingingo.server.event.events.PacketReceiveEvent;
-import net.kingingo.server.packets.client.CounterPacket;
-import net.kingingo.server.packets.server.CounterAckPacket;
+import net.kingingo.server.packets.client.CountdownPacket;
+import net.kingingo.server.packets.server.CountdownAckPacket;
 import net.kingingo.server.user.State;
 import net.kingingo.server.user.User;
 import net.kingingo.server.utils.Utils;
@@ -29,10 +29,10 @@ public class Countdown implements EventListener, Runnable{
 	
 	@EventHandler
 	public void rec(PacketReceiveEvent ev) {
-		if(ev.getPacket() instanceof CounterPacket) {
-			ev.getUser().setTimeDifference(System.currentTimeMillis()-ev.getPacket(CounterPacket.class).getTime());
+		if(ev.getPacket() instanceof CountdownPacket) {
+			ev.getUser().setTimeDifference(System.currentTimeMillis()-ev.getPacket(CountdownPacket.class).getTime());
 			
-			CounterAckPacket ack = new CounterAckPacket(getEnd());
+			CountdownAckPacket ack = new CountdownAckPacket(getEnd());
 			ev.getUser().write(ack);
 		}
 	}
@@ -47,7 +47,7 @@ public class Countdown implements EventListener, Runnable{
 	}
 	
 	public void over() {
-		start(this.time);
+		start(this.time / (60*1000));
 	}
 	
 	public boolean isOver() {
@@ -56,7 +56,7 @@ public class Countdown implements EventListener, Runnable{
 	
 	public void start(long min) {
 		if(!isOver())return;
-		Main.debug("Counter start "+min+" min");
+		Main.debug("Countedown start "+min+" min");
 		this.start = System.currentTimeMillis();
 		this.time=min * 60 * 1000;
 		this.thread = new Thread(this);
@@ -66,7 +66,7 @@ public class Countdown implements EventListener, Runnable{
 	}
 	
 	private void broadcast() {
-		CounterAckPacket packet = new CounterAckPacket(getEnd());
+		CountdownAckPacket packet = new CountdownAckPacket(getEnd());
 		State state;
 		for(User user : User.getUsers().values()) {
 			state = user.getState();

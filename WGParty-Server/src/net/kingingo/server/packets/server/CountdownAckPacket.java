@@ -6,12 +6,12 @@ import java.io.IOException;
 
 import net.kingingo.server.packets.Packet;
 
-public class CounterAckPacket extends Packet{
+public class CountdownAckPacket extends Packet{
 	public long time;
 	
-	public CounterAckPacket() {}
+	public CountdownAckPacket() {}
 	
-	public CounterAckPacket(long time) {
+	public CountdownAckPacket(long time) {
 		this.time=time;
 	}
 	

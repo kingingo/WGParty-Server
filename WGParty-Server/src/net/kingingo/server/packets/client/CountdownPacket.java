@@ -7,12 +7,12 @@ import java.io.IOException;
 import lombok.Getter;
 import net.kingingo.server.packets.Packet;
 
-public class CounterPacket extends Packet{
+public class CountdownPacket extends Packet{
 	
 	@Getter
 	private long time;
 	
-	public CounterPacket() {}
+	public CountdownPacket() {}
 	
 	@Override
 	public void parseFromInput(DataInputStream in) throws IOException {
