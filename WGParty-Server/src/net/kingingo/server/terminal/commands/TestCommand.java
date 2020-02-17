@@ -6,10 +6,13 @@ import com.google.common.collect.Lists;
 
 import net.kingingo.server.Main;
 import net.kingingo.server.countdown.Countdown;
+import net.kingingo.server.packets.server.MatchPacket;
 import net.kingingo.server.terminal.CommandExecutor;
+import net.kingingo.server.user.State;
 import net.kingingo.server.user.Stats;
 import net.kingingo.server.user.User;
 import net.kingingo.server.utils.Utils;
+import net.kingingo.server.wheel.Wheel;
 
 public class TestCommand implements CommandExecutor{
 
@@ -49,6 +52,18 @@ public class TestCommand implements CommandExecutor{
 		case "USERS":
 			for(User u : User.getUsers().values()) {
 				if(!u.isTester())Main.printf(u.getDetails());
+			}
+			break;
+		case "WIN":
+			MatchPacket packet = new MatchPacket(User.getUser("Oskar"), User.getUser("Jonas"), Wheel.getInstance().getAlk());
+			int packetLength = packet.toByteArray().length;
+			
+			for(User u : User.getUsers().values()) {
+				Main.printf(u.getName()+" "+u.isTester()+" "+u.getState().name());
+				if(!u.isTester() && (u.getState() == State.DASHBOARD_PAGE)) {
+					u.write(packet);
+					Main.printf("Send MatchPacket to "+u.getName()+" "+packet.toString()+"("+packetLength+")");
+				}
 			}
 			break;
 		default:

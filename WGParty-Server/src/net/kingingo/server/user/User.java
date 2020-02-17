@@ -1,10 +1,7 @@
 package net.kingingo.server.user;
 
-import java.awt.Image;
-import java.io.DataOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
@@ -52,6 +49,13 @@ public class User {
 	public static HashMap<User, Stats> getAllStats(){
 		return stats;
 	}
+	
+	public static User getUser(String name) {
+		for(User u : stats.keySet()) {
+			if(u.getName().equalsIgnoreCase(name))return u;
+		}
+		return null;
+	}
 
 	public static User getUser(UUID uuid) {
 		return uuids.get(uuid);
@@ -73,8 +77,6 @@ public class User {
 	private String name;
 	@Getter
 	private UUID uuid;
-	@Getter
-	private byte[] profilImage;
 	
 	@Getter
 	private State state = State.HANDSHAKE;
@@ -87,7 +89,7 @@ public class User {
 	
 	public User(WebSocket webSocket) {
 		this.socket = webSocket;
-		User.getUsers().put(webSocket, this);
+		if(webSocket!=null)User.getUsers().put(webSocket, this);
 	} 
 	
 	public void setState(State state) {
@@ -136,7 +138,7 @@ public class User {
 		try {
 			Utils.createDirectorie(getPath());
 			Utils.toFile(getPath(), arr_img);
-			this.profilImage = arr_img;
+			
 			Main.printf("UUID:"+uuid.toString()+"("+uuid.toString().length()+") "+name);
 			MySQL.Update("INSERT INTO users (uuid,name) VALUES ('" + uuid.toString() + "','" + name + "');");
 		} catch (IOException e) {
@@ -146,7 +148,7 @@ public class User {
 	}
 
 	public String getPath() {
-		return File.separatorChar + "images" + File.separatorChar + uuid.toString() + File.separatorChar + "img.png";
+		return Main.WEBSERVER_PATH + File.separatorChar + "images"+File.separatorChar+"profiles"+File.separatorChar+getUuid().toString()+".png";
 	}
 
 	public void write(Packet packet) {
@@ -169,20 +171,15 @@ public class User {
 		if(found!=null) {
 			Main.debug("User already loaded "+found.toString());
 			remove();
-			
 			found.setSocket(this.socket);
-			found.write(new HandshakeAckPacket(found.getName(),new byte[0], true));
+			found.write(new HandshakeAckPacket(found.getName(), true));
 			found.setState(packet.getState());
 			return found;
 		}
 		stats.put(this, new Stats(this));
 		User.uuids.put(uuid, this);
 		this.uuid = uuid;
-		try {
-			this.profilImage = Files.readAllBytes(new File(getPath()).toPath());
-		} catch (IOException e1) {
-			e1.printStackTrace();
-		}
+
 		Main.debug("Loading User "+toString());
 
 		final User user = this;
@@ -200,17 +197,14 @@ public class User {
 					Main.debug("User: "+user.toString()+" Loaded:"+count+" -> "+(count==1 ? "accepted" : "not accepted"));
 					
 					if (count == 1 && user.getName() != null) {
-						byte[] img_arr = Utils.toBytes(user.getPath());
-						user.write(new HandshakeAckPacket(user.getName(),img_arr, true));
+						user.write(new HandshakeAckPacket(user.getName(), true));
 					} else {
 						user.write(new HandshakeAckPacket(false));
 					}
 					user.setState(packet.getState());
 				} catch (SQLException e) {
 					e.printStackTrace();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
+				} 
 			}
 		});
 		

@@ -29,9 +29,11 @@ public class MatchPacket extends Packet{
 	@Override
 	public void writeToOutput(DataOutputStream out) throws IOException {
 		out.writeUTF(this.winner.getName());
-		writeBytes(winner.getProfilImage(), out);
+		out.writeUTF(this.winner.getUuid().toString());
+		
 		out.writeUTF(this.loser.getName());
-		writeBytes(loser.getProfilImage(), out);
+		out.writeUTF(this.loser.getUuid().toString());
+		
 		out.writeInt(this.alk.size());
 		for(Alk a : this.alk)a.writeToOutput(out);
 	}

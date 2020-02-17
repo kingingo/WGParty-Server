@@ -1,5 +1,6 @@
 package net.kingingo.server;
 
+import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
@@ -14,6 +15,7 @@ import net.kingingo.server.user.User;
 public class Main {
 	@Getter
 	public static WSocketServer server;
+	public static final String WEBSERVER_PATH = "C:"+File.separatorChar+"Users"+File.separatorChar+"darouser"+File.separatorChar+"git"+File.separatorChar+"wgparty"+File.separatorChar+"WGParty"+File.separatorChar+"src";
 	public static final int DEFAULT_PORT = 8887;
 	public static final int PING_TIME = 10; //secs
 	private static final SimpleDateFormat DATE_FORMAT_NOW = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -33,22 +35,7 @@ public class Main {
 	}
 
 	public static void main(String[] a) {
-//		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-//		DataOutputStream out = new DataOutputStream(baos);
-//		
-//		try {
-//			out.writeBoolean(false);
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//		}
-//		
-//		byte[] b = baos.toByteArray();
-//		
-//		for(byte bb : b)System.out.print(bb+",");
-//		System.out.println();
-		
 		init();
-		
 		User.createTestUsers();
 	}
 	

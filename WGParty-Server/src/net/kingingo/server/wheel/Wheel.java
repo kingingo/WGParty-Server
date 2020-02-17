@@ -2,6 +2,7 @@ package net.kingingo.server.wheel;
 
 import java.util.ArrayList;
 
+import lombok.Getter;
 import net.kingingo.server.utils.Utils;
 
 public class Wheel {
@@ -12,11 +13,12 @@ public class Wheel {
 		return wheel;
 	}	
 	
+	@Getter
 	private ArrayList<Alk> alk = new ArrayList<Alk>();
 	
 	private Wheel() {
 		alk.add(new Alk("Vodka",1,"vodka.png"));
-		alk.add(new Alk("Jägermeister",1,"jaegermeister.png"));
+		alk.add(new Alk("Jaegermeister",1,"jaegermeister.png"));
 		alk.add(new Alk("Tequila",1,"tequila.png"));
 		alk.add(new Alk("Whiskey",1,"whiskey.png"));
 		alk.add(new Alk("Berliner Luft",1,"berliner_luft.png"));
@@ -24,7 +26,7 @@ public class Wheel {
 		alk.add(new Alk("Astra Rakete",1,"astra.png"));
 		alk.add(new Alk("Gin",1,"gin.png"));
 		alk.add(new Alk("Rum",1,"rum.png"));
-		alk.add(new Alk("Glühwein",1,"gluehwein.png"));
+		alk.add(new Alk("Gluehwein",1,"gluehwein.png"));
 	}
 	
 	public Alk randomAlk() {
