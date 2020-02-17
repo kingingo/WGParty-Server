@@ -55,7 +55,7 @@ public class TestCommand implements CommandExecutor{
 			}
 			break;
 		case "WIN":
-			MatchPacket packet = new MatchPacket(User.getUser("Oskar"), User.getUser("Jonas"), Wheel.getInstance().getAlk());
+			MatchPacket packet = new MatchPacket(User.getUser((args.length==2?args[1]:"Oskar")), User.getUser("Felix"), Wheel.getInstance().getAlk());
 			int packetLength = packet.toByteArray().length;
 			
 			for(User u : User.getUsers().values()) {

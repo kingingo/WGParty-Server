@@ -15,6 +15,7 @@ import net.kingingo.server.packets.client.HandshakePacket;
 import net.kingingo.server.packets.client.PongPacket;
 import net.kingingo.server.packets.client.RegisterPacket;
 import net.kingingo.server.packets.client.StatsPacket;
+import net.kingingo.server.packets.client.WheelSpinPacket;
 import net.kingingo.server.packets.server.HandshakeAckPacket;
 import net.kingingo.server.packets.server.IdsPacket;
 import net.kingingo.server.packets.server.PingPacket;
@@ -59,7 +60,14 @@ public class UserListener implements EventListener{
 	public void rec(PacketReceiveEvent ev) {
 		if(!(ev.getPacket() instanceof PongPacket))Main.debug(ev.getUser().toString() + " -> "+ev.getPacket().toString());
 		
-		if(ev.getPacket() instanceof HandshakePacket) {
+		if(ev.getPacket() instanceof WheelSpinPacket) {
+			State state;
+			for(User user : User.getUsers().values()) {
+				state = user.getState();
+				if(user.getUuid() != ev.getUser().getUuid() && (state == State.VS_PAGE ||state == State.DASHBOARD_PAGE))
+					user.write(ev.getPacket());
+			}
+		}else if(ev.getPacket() instanceof HandshakePacket) {
 			ev.getUser().load(ev.getPacket(HandshakePacket.class));
 		}else if(ev.getPacket() instanceof RegisterPacket) {
 			RegisterPacket packet = ev.getPacket(RegisterPacket.class);

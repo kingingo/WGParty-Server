@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 import org.java_websocket.WebSocket;
@@ -18,6 +19,7 @@ import net.kingingo.server.mysql.MySQL;
 import net.kingingo.server.packets.Packet;
 import net.kingingo.server.packets.client.HandshakePacket;
 import net.kingingo.server.packets.server.HandshakeAckPacket;
+import net.kingingo.server.packets.server.StatsAckPacket;
 import net.kingingo.server.utils.Callback;
 import net.kingingo.server.utils.Utils;
 
@@ -135,6 +137,8 @@ public class User {
 		this.uuid = UUID.randomUUID();
 		this.name = name;
 		setState(State.REGISTER_PAGE);
+		User.stats.put(this, new Stats(this));
+		User.uuids.put(this.uuid, this);
 		try {
 			Utils.createDirectorie(getPath());
 			Utils.toFile(getPath(), arr_img);
@@ -143,6 +147,18 @@ public class User {
 			MySQL.Update("INSERT INTO users (uuid,name) VALUES ('" + uuid.toString() + "','" + name + "');");
 		} catch (IOException e) {
 			e.printStackTrace();
+		}
+		
+		HashMap<User,Stats> s = new HashMap<User,Stats>();
+		s.put(this, getStats());
+		
+		StatsAckPacket stats = new StatsAckPacket(s);
+		State state;
+		for(User user : User.users.values()) {
+			state = user.getState();
+			if(state == State.DASHBOARD_PAGE && user.getUuid() != this.uuid) {
+				user.write(stats);
+			}
 		}
 		return uuid;
 	}
@@ -176,8 +192,6 @@ public class User {
 			found.setState(packet.getState());
 			return found;
 		}
-		stats.put(this, new Stats(this));
-		User.uuids.put(uuid, this);
 		this.uuid = uuid;
 
 		Main.debug("Loading User "+toString());
@@ -192,15 +206,17 @@ public class User {
 					while(rs.next()) {
 						count++;
 						user.setName(rs.getString("name"));
+						User.stats.put(user, new Stats(user));
 						user.getStats().loadFromResultSet(rs);
 					}
-					Main.debug("User: "+user.toString()+" Loaded:"+count+" -> "+(count==1 ? "accepted" : "not accepted"));
 					
 					if (count == 1 && user.getName() != null) {
+						User.uuids.put(user.uuid, user);
 						user.write(new HandshakeAckPacket(user.getName(), true));
 					} else {
 						user.write(new HandshakeAckPacket(false));
 					}
+					Main.debug("User: "+user.toString()+" Loaded:"+count+" -> "+(count==1 ? "accepted" : "not accepted"));
 					user.setState(packet.getState());
 				} catch (SQLException e) {
 					e.printStackTrace();
