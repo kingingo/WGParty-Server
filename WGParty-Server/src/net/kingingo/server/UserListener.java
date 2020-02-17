@@ -64,7 +64,7 @@ public class UserListener implements EventListener{
 			State state;
 			for(User user : User.getUsers().values()) {
 				state = user.getState();
-				if(user.getUuid() != ev.getUser().getUuid() && (state == State.VS_PAGE ||state == State.DASHBOARD_PAGE))
+				if(user.getUuid() != ev.getUser().getUuid() && state == State.DASHBOARD_PAGE)
 					user.write(ev.getPacket());
 			}
 		}else if(ev.getPacket() instanceof HandshakePacket) {

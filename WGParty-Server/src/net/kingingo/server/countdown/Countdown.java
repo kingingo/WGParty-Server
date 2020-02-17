@@ -70,7 +70,7 @@ public class Countdown implements EventListener, Runnable{
 		State state;
 		for(User user : User.getUsers().values()) {
 			state = user.getState();
-			if(state==State.VS_PAGE || state==State.DASHBOARD_PAGE)
+			if(state==State.DASHBOARD_PAGE)
 				user.write(packet);
 		}
 	}
