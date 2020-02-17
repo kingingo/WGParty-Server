@@ -1,6 +1,7 @@
 package net.kingingo.server.user;
 
 import java.awt.Image;
+import java.io.DataOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
