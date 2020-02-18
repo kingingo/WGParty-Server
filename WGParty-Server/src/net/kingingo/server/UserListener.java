@@ -70,8 +70,7 @@ public class UserListener implements EventListener{
 		}else if(ev.getPacket() instanceof HandshakePacket) {
 			ev.getUser().load(ev.getPacket(HandshakePacket.class));
 		}else if(ev.getPacket() instanceof RegisterPacket) {
-			RegisterPacket packet = ev.getPacket(RegisterPacket.class);
-			UUID uuid = ev.getUser().register(packet.getName(),packet.getImage());
+			UUID uuid = ev.getUser().register(ev.getPacket(RegisterPacket.class));
 			ev.getUser().write(new RegisterAckPacket(uuid));
 		}else if(ev.getPacket() instanceof StatsPacket) {
 			StatsPacket packet = ev.getPacket(StatsPacket.class);

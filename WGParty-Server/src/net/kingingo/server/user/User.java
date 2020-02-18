@@ -18,6 +18,7 @@ import net.kingingo.server.event.events.StateChangeEvent;
 import net.kingingo.server.mysql.MySQL;
 import net.kingingo.server.packets.Packet;
 import net.kingingo.server.packets.client.HandshakePacket;
+import net.kingingo.server.packets.client.RegisterPacket;
 import net.kingingo.server.packets.server.HandshakeAckPacket;
 import net.kingingo.server.packets.server.StatsAckPacket;
 import net.kingingo.server.utils.Callback;
@@ -133,17 +134,17 @@ public class User {
 		return this.getSocket()==null;
 	}
 	
-	public UUID register(String name,byte[] arr_img) {
+	public UUID register(RegisterPacket packet) {
 		this.uuid = UUID.randomUUID();
-		this.name = name;
+		this.name = packet.getName();
 		setState(State.REGISTER_PAGE);
 		User.stats.put(this, new Stats(this));
 		User.uuids.put(this.uuid, this);
 		try {
 			Utils.createDirectorie(getPath());
-			Utils.toFile(getPath(), arr_img);
+			Utils.toFile(getPath(), packet.getImage());
 			
-			Main.printf("UUID:"+uuid.toString()+"("+uuid.toString().length()+") "+name);
+			Main.printf("UUID:"+uuid.toString()+"("+uuid.toString().length()+") "+name+" format:"+packet.getFormat());
 			MySQL.Update("INSERT INTO users (uuid,name) VALUES ('" + uuid.toString() + "','" + name + "');");
 		} catch (IOException e) {
 			e.printStackTrace();

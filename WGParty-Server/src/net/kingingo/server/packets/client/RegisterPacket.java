@@ -12,12 +12,15 @@ public class RegisterPacket extends Packet{
 	public String name;
 	@Getter
 	public byte[] image;
+	@Getter
+	public String format;
 	
 	public RegisterPacket() {}
 	
 	@Override
 	public void parseFromInput(DataInputStream in) throws IOException {
 		this.name=in.readUTF();
+		this.format = in.readUTF();
 		this.image=Packet.readBytes(in);
 	}
 
@@ -25,6 +28,6 @@ public class RegisterPacket extends Packet{
 	public void writeToOutput(DataOutputStream out) throws IOException {}
 	
 	public String toString() {
-		return this.getPacketName() + " name:"+this.name+", img="+this.image.length;
+		return this.getPacketName() + " name:"+this.name+", img="+this.image.length+" format:"+this.format;
 	}
 }
