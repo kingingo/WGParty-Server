@@ -1,5 +1,7 @@
 package net.kingingo.server.countdown;
 
+import java.util.ArrayList;
+
 import net.kingingo.server.Main;
 import net.kingingo.server.event.EventHandler;
 import net.kingingo.server.event.EventListener;
@@ -7,6 +9,7 @@ import net.kingingo.server.event.EventManager;
 import net.kingingo.server.event.events.PacketReceiveEvent;
 import net.kingingo.server.packets.client.CountdownPacket;
 import net.kingingo.server.packets.server.CountdownAckPacket;
+import net.kingingo.server.packets.server.StartMatchPacket;
 import net.kingingo.server.user.State;
 import net.kingingo.server.user.User;
 import net.kingingo.server.utils.Utils;
@@ -46,8 +49,23 @@ public class Countdown implements EventListener, Runnable{
 		over();
 	}
 	
+	/**
+	 * 1. Spieler wahl
+	 * 2. Match
+	 * 3. Loser Drink wahl
+	 * -> von vorne
+	 */
+	
 	public void over() {
-		start(this.time / (60*1000));
+//		start(this.time / (60*1000));
+		//Die auswahl der Spieler muss nochmal genau festgelegt werden! Nicht nur zufall!
+		ArrayList<User> users = new ArrayList<User>(User.getAllStats().keySet());
+		User u1 = User.getUser("Felix");
+		User u2 = User.getUser("Oskar");
+
+		StartMatchPacket start = new StartMatchPacket(u1,u2,users);
+		User.broadcast(start);
+		Main.printf("Start Match with "+u1.getName()+" "+u2.getName());
 	}
 	
 	public boolean isOver() {
@@ -56,7 +74,7 @@ public class Countdown implements EventListener, Runnable{
 	
 	public void start(long min) {
 		if(!isOver())return;
-		Main.debug("Countedown start "+min+" min");
+		Main.debug("Countdown start "+min+" min");
 		this.start = System.currentTimeMillis();
 		this.time=min * 60 * 1000;
 		this.thread = new Thread(this);

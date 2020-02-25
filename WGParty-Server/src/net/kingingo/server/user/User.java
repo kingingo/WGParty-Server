@@ -31,6 +31,12 @@ public class User {
 	private static HashMap<UUID, User> uuids = new HashMap<UUID, User>();
 	private static HashMap<User, Stats> stats = new HashMap<User, Stats>();
 	
+	public static void broadcast(Packet packet) {
+		for(User u : users.values()) {
+			u.write(packet);
+		}
+	}
+	
 	public static void createTestUsers() {
 		createTestUser("Moritz",8,3);
 		createTestUser("Oskar",7,4);
@@ -142,7 +148,9 @@ public class User {
 		User.uuids.put(this.uuid, this);
 		try {
 			Utils.createDirectorie(getPath());
-			Utils.toFile(getPath(), packet.getImage());
+			
+			Utils.toFile(getOriginalPath(packet.format), packet.getImage());
+			Utils.resize(new File(getOriginalPath(packet.format)), getPath(),256,256);
 			
 			Main.printf("UUID:"+uuid.toString()+"("+uuid.toString().length()+") "+name+" format:"+packet.getFormat());
 			MySQL.Update("INSERT INTO users (uuid,name) VALUES ('" + uuid.toString() + "','" + name + "');");
@@ -164,8 +172,12 @@ public class User {
 		return uuid;
 	}
 
+	public String getOriginalPath(String format) {
+		return Main.WEBSERVER_PATH + File.separatorChar + "images"+File.separatorChar+"profiles"+File.separatorChar+"original"+File.separatorChar+getUuid().toString()+"."+format;
+	}
+	
 	public String getPath() {
-		return Main.WEBSERVER_PATH + File.separatorChar + "images"+File.separatorChar+"profiles"+File.separatorChar+getUuid().toString()+".png";
+		return Main.WEBSERVER_PATH + File.separatorChar + "images"+File.separatorChar+"profiles"+File.separatorChar+"resize"+File.separatorChar+getUuid().toString()+".jpg";
 	}
 
 	public void write(Packet packet) {

@@ -1,12 +1,13 @@
 package net.kingingo.server.utils;
 
-import java.awt.Color;
+import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.Random;
+import java.util.UUID;
 
 import javax.imageio.ImageIO;
 
@@ -15,25 +16,73 @@ import org.apache.commons.io.FileUtils;
 public class Utils {
 	private static Random rand = new Random();
 	
-	public static void convertToJPG(File file,String newPath) {
-		BufferedImage bufferedImage;
-		
-		try {
-				
-		  //read image file
-		  bufferedImage = ImageIO.read(file);
-
-		  // create a blank, RGB, same width and height, and a white background
-		  BufferedImage newBufferedImage = new BufferedImage(bufferedImage.getWidth(),
-				bufferedImage.getHeight(), BufferedImage.TYPE_INT_RGB);
-		  newBufferedImage.createGraphics().drawImage(bufferedImage, 0, 0, Color.WHITE, null);
-
-		  // write to jpeg file
-		  ImageIO.write(newBufferedImage, "jpg", new File(newPath));
-		} catch (IOException e) {
-		  e.printStackTrace();
-		}
-	   }
+	public static void main(String[] a) {
+		String path = "C:"+File.separatorChar+"Users"+File.separatorChar+"obena"+File.separatorChar+"git"+File.separatorChar+"wgparty"+File.separatorChar+"WGParty"+File.separatorChar+"src"+File.separatorChar+"images"+File.separatorChar+"profiles"+File.separatorChar;
+		String[] names = new String[] {
+				"Oskar",
+				"Jonas",
+				"Henrik",
+				"Moritz",
+				"Jonathan",
+				"Leon"
+		};
+		for(String name : names)
+			try {
+				resize(new File(path+"original"+File.separatorChar+name+".png"),path+"resize"+File.separatorChar+UUID.nameUUIDFromBytes(name.getBytes()).toString()+".jpg",256,256);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+	}
+	
+	/**
+     * Resizes an image to a absolute width and height (the image may not be
+     * proportional)
+     * @param inputImagePath Path of the original image
+     * @param outputImagePath Path to save the resized image
+     * @param scaledWidth absolute width in pixels
+     * @param scaledHeight absolute height in pixels
+     * @throws IOException
+     */
+    public static void resize(File inputFile,
+            String outputImagePath, int scaledWidth, int scaledHeight)
+            throws IOException {
+        // reads input image
+//        File inputFile = new File(inputImagePath);
+        BufferedImage inputImage = ImageIO.read(inputFile);
+ 
+        // creates output image
+        BufferedImage outputImage = new BufferedImage(scaledWidth,
+                scaledHeight, BufferedImage.TYPE_INT_RGB); //inputImage.getType()
+ 
+        // scales the input image to the output image
+        Graphics2D g2d = outputImage.createGraphics();
+        g2d.drawImage(inputImage, 0, 0, scaledWidth, scaledHeight, null);
+        g2d.dispose();
+ 
+        // extracts extension of output file
+//        String formatName = outputImagePath.substring(outputImagePath.lastIndexOf(".") + 1);
+ 
+        // writes to output file
+        ImageIO.write(outputImage, "jpg", new File(outputImagePath));
+    }
+ 
+    /**
+     * Resizes an image by a percentage of original size (proportional).
+     * @param inputImagePath Path of the original image
+     * @param outputImagePath Path to save the resized image
+     * @param percent a double number specifies percentage of the output image
+     * over the input image.
+     * @throws IOException
+     */
+    public static void resize(File inputFile,
+            String outputImagePath, double percent) throws IOException {
+//        File inputFile = new File(inputImagePath);
+        BufferedImage inputImage = ImageIO.read(inputFile);
+        int scaledWidth = (int) (inputImage.getWidth() * percent);
+        int scaledHeight = (int) (inputImage.getHeight() * percent);
+        resize(inputFile, outputImagePath, scaledWidth, scaledHeight);
+    }
 	
 	public static int randInt(int min, int max) {
 	    return rand.nextInt((max - min) + 1) + min;

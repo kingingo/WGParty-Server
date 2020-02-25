@@ -45,6 +45,10 @@ public class TestCommand implements CommandExecutor{
 			Main.printf("Test User "+tester);
 			Main.printf("Normal User "+(User.getAllStats().size()-tester));
 			break;
+		case "OVER":
+			Countdown.getInstance().over();
+			Main.printf("Start Over Method!");
+			break;
 		case "TIME":
 			Countdown c = Countdown.getInstance();
 			Main.printf("Countdown: "+c.toString());
