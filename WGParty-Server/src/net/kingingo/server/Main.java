@@ -9,6 +9,7 @@ import net.kingingo.server.countdown.Countdown;
 import net.kingingo.server.mysql.MySQL;
 import net.kingingo.server.packets.Packet;
 import net.kingingo.server.ping.PingThread;
+import net.kingingo.server.stage.Stage;
 import net.kingingo.server.terminal.Terminal;
 import net.kingingo.server.user.User;
 
@@ -46,7 +47,7 @@ public class Main {
 		loadMySQL();
 		Main.listener = new UserListener();
 		Main.pingThread = new PingThread();
-		Countdown.getInstance().start(30);
+		Stage.next();
 		
 		Main.server = new WSocketServer(DEFAULT_PORT);
 		Main.server.start();

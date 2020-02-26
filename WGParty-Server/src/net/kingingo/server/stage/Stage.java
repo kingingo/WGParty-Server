@@ -1,14 +1,11 @@
 package net.kingingo.server.stage;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 
 import lombok.Getter;
 import net.kingingo.server.Main;
-import net.kingingo.server.countdown.Countdown;
 import net.kingingo.server.event.EventListener;
 import net.kingingo.server.event.EventManager;
-import net.kingingo.server.packets.Packet;
 import net.kingingo.server.stage.stages.Game;
 import net.kingingo.server.stage.stages.PlayerChoose;
 import net.kingingo.server.stage.stages.WheelStage;
@@ -21,6 +18,10 @@ public abstract class Stage implements EventListener, Runnable{
 		new PlayerChoose();
 		new Game();
 		new WheelStage();
+	}
+	
+	public static <T extends Stage> T get(Class<T> clazz) {
+		return (T) stages.get(clazz);
 	}
 	
 	public static Stage currentStage() {
@@ -100,5 +101,9 @@ public abstract class Stage implements EventListener, Runnable{
 		this.active=true;
 		this.thread = new Thread(this);
 		this.thread.start();
+	}
+	
+	public String toString() {
+		return "Stage-"+this.getClass().getSimpleName()+" active:"+this.isActive();
 	}
 }

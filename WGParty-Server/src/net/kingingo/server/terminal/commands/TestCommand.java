@@ -5,8 +5,9 @@ import java.util.ArrayList;
 import com.google.common.collect.Lists;
 
 import net.kingingo.server.Main;
-import net.kingingo.server.countdown.Countdown;
 import net.kingingo.server.packets.server.MatchPacket;
+import net.kingingo.server.stage.Stage;
+import net.kingingo.server.stage.stages.Countdown;
 import net.kingingo.server.terminal.CommandExecutor;
 import net.kingingo.server.user.State;
 import net.kingingo.server.user.Stats;
@@ -45,13 +46,8 @@ public class TestCommand implements CommandExecutor{
 			Main.printf("Test User "+tester);
 			Main.printf("Normal User "+(User.getAllStats().size()-tester));
 			break;
-		case "OVER":
-			Countdown.getInstance().over();
-			Main.printf("Start Over Method!");
-			break;
 		case "TIME":
-			Countdown c = Countdown.getInstance();
-			Main.printf("Countdown: "+c.toString());
+			Main.printf("Countdown: "+ Stage.get(Countdown.class).toString());
 			break;
 		case "USERS":
 			for(User u : User.getUsers().values()) {
