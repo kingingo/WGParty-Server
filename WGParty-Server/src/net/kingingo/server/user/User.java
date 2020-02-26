@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.UUID;
 
 import org.java_websocket.WebSocket;
@@ -32,8 +31,12 @@ public class User {
 	private static HashMap<User, Stats> stats = new HashMap<User, Stats>();
 	
 	public static void broadcast(Packet packet) {
+		broadcast(packet, null);
+	}
+	
+	public static void broadcast(Packet packet,State st) {
 		for(User u : users.values()) {
-			u.write(packet);
+			if(st == null || st == u.getState())u.write(packet);
 		}
 	}
 	

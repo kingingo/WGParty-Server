@@ -60,14 +60,7 @@ public class UserListener implements EventListener{
 	public void rec(PacketReceiveEvent ev) {
 		if(!(ev.getPacket() instanceof PongPacket))Main.debug(ev.getUser().toString() + " -> "+ev.getPacket().toString());
 		
-		if(ev.getPacket() instanceof WheelSpinPacket) {
-			State state;
-			for(User user : User.getUsers().values()) {
-				state = user.getState();
-				if(user.getUuid() != ev.getUser().getUuid() && state == State.DASHBOARD_PAGE)
-					user.write(ev.getPacket());
-			}
-		}else if(ev.getPacket() instanceof HandshakePacket) {
+		if(ev.getPacket() instanceof HandshakePacket) {
 			ev.getUser().load(ev.getPacket(HandshakePacket.class));
 		}else if(ev.getPacket() instanceof RegisterPacket) {
 			UUID uuid = ev.getUser().register(ev.getPacket(RegisterPacket.class));
