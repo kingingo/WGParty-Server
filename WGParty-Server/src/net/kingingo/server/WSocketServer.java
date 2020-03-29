@@ -43,6 +43,7 @@ public class WSocketServer extends WebSocketServer{
 		EventManager.callEvent(ev);
 		
 		if(!ev.isCancelled()) {
+			packet = ev.getPacket();
 			byte[] packetBytes = packet.toByteArray();
 			ByteArrayOutputStream baos = new ByteArrayOutputStream();
 			DataOutputStream out = new DataOutputStream( baos );

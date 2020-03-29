@@ -1,9 +1,10 @@
 package net.kingingo.server.stage.stages;
 
 import lombok.Setter;
+import net.kingingo.server.Main;
 import net.kingingo.server.event.EventHandler;
-import net.kingingo.server.event.EventManager;
 import net.kingingo.server.event.events.PacketReceiveEvent;
+import net.kingingo.server.event.events.PacketSendEvent;
 import net.kingingo.server.packets.client.CountdownPacket;
 import net.kingingo.server.packets.server.CountdownAckPacket;
 import net.kingingo.server.stage.Stage;
@@ -18,9 +19,23 @@ public class Countdown extends Stage{
 	@Setter
 	private long time = 30 * 60 * 1000;
 	
-	private Countdown() {
+	public Countdown() {
 		super(TimeSpan.MINUTE*30);
 	}
+	
+	/**
+	 * Set Time Difference between User and Server!
+	 * @param ev
+	 */
+//	@EventHandler
+//	public void send(PacketSendEvent ev) {
+//		if(ev.getPacket() instanceof CountdownAckPacket) {
+//			CountdownAckPacket ack = ((CountdownAckPacket) ev.getPacket()).clone();
+//			Main.printf("Time Difference "+ev.getUser().getTimeDifference()+"ms from "+ev.getUser().getName());
+//			ack.time += ev.getUser().getTimeDifference();
+//			ev.setPacket(ack);
+//		}
+//	}
 	
 	@EventHandler
 	public void rec(PacketReceiveEvent ev) {
@@ -50,11 +65,12 @@ public class Countdown extends Stage{
 	
 	public void start() {
 		super.start();
+		
 		this.start = System.currentTimeMillis();
 		printf("Countdown start "+inMinutes()+" min");
 		
 		CountdownAckPacket packet = new CountdownAckPacket(getEnd());
-		User.broadcast(packet,State.DASHBOARD_PAGE);
+		User.broadcast(packet);
 	}
 	
 	public long getEnd() {

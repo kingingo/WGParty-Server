@@ -1,10 +1,9 @@
 package net.kingingo.server.stage.stages;
 
-import java.util.ArrayList;
-
 import net.kingingo.server.Main;
 import net.kingingo.server.event.EventHandler;
 import net.kingingo.server.event.events.PacketReceiveEvent;
+import net.kingingo.server.event.events.StateChangeEvent;
 import net.kingingo.server.packets.client.WheelSpinPacket;
 import net.kingingo.server.packets.server.MatchPacket;
 import net.kingingo.server.packets.server.StartMatchPacket;
@@ -16,36 +15,57 @@ import net.kingingo.server.wheel.Wheel;
 
 public class WheelStage extends Stage{
 	
+	private long rolled = 0;
+	
 	public WheelStage() {
-		super(TimeSpan.MINUTE * 10);
+		super(TimeSpan.SECOND*20);
 	}
 	
 	@EventHandler
 	public void rec(PacketReceiveEvent ev) {
 		if(!isActive())return;
 		if(ev.getPacket() instanceof WheelSpinPacket) {
+			this.rolled=System.currentTimeMillis();
+			
+			
+			
 			State state;
 			for(User user : User.getUsers().values()) {
 				state = user.getState();
-				if(user.getUuid() != ev.getUser().getUuid() && state == State.DASHBOARD_PAGE)
+				if(user.getUuid() != ev.getUser().getUuid() && state == State.INGAME)
 					user.write(ev.getPacket());
 			}
 			
-			Stage.next();
 		}
 	}
 	
 
 	public boolean running() {
-		Main.printf("TimeOut Wheel hasn't been rolled...");
+		if(this.rolled != 0) {
+			long diff = System.currentTimeMillis() - this.rolled;
+			
+			if(diff <= TimeSpan.SECOND*7) {
+				printf("Wheel sleeps for "+diff+"ms");
+				try {
+					Thread.sleep(diff);
+					printf("Wheel waked up");
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		
+		printf(this.rolled==0 ? "Wheel has been rolled :)" : "TimeOut Wheel hasn't been rolled...");
 		return true;
 	}
 	
 	@Override
 	public void start() {
 		super.start();
+		setCountdown("time to wheel");
+		this.rolled=0;
 		printf("Start Celebration and init Wheel");
 		MatchPacket packet = new MatchPacket(User.getUser("Oskar"), User.getUser("Felix"), Wheel.getInstance().getAlk());
-		User.broadcast(packet);
+		broadcast(packet);
 	}
 }

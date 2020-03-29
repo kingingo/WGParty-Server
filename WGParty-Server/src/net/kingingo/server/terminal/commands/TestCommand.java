@@ -49,6 +49,10 @@ public class TestCommand implements CommandExecutor{
 		case "TIME":
 			Main.printf("Countdown: "+ Stage.get(Countdown.class).toString());
 			break;
+		case "STAGE":
+			Stage.next();
+			Main.printf("Stage NEXT!");
+			break;
 		case "USERS":
 			for(User u : User.getUsers().values()) {
 				if(!u.isTester())Main.printf(u.getDetails());

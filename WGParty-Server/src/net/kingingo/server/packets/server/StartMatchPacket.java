@@ -12,6 +12,7 @@ import net.kingingo.server.packets.Packet;
 import net.kingingo.server.user.User;
 
 public class StartMatchPacket extends Packet{
+	public boolean roulette = true;
 	public User user1;
 	public User user2;
 	public ArrayList<User> loaded;
@@ -19,9 +20,14 @@ public class StartMatchPacket extends Packet{
 	public StartMatchPacket() {}
 	
 	public StartMatchPacket(User u1, User u2, ArrayList<User> loaded) {
+		this(u1,u2,loaded,true);
+	}
+	
+	public StartMatchPacket(User u1, User u2, ArrayList<User> loaded,boolean roulette) {
 		this.user1=u1;
 		this.user2=u2;
 		this.loaded=loaded;
+		this.roulette = roulette;
 	}
 	
 	@Override
@@ -32,6 +38,8 @@ public class StartMatchPacket extends Packet{
 		if(!this.loaded.contains(user1))this.loaded.add(user1);
 		if(!this.loaded.contains(user2))this.loaded.add(user2);
 		Collections.shuffle(this.loaded);
+		
+		out.writeBoolean(this.roulette);
 		
 		out.writeInt(getIndex(user1));
 		out.writeInt(getIndex(user2));

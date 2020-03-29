@@ -5,7 +5,6 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
 import lombok.Getter;
-import net.kingingo.server.countdown.Countdown;
 import net.kingingo.server.mysql.MySQL;
 import net.kingingo.server.packets.Packet;
 import net.kingingo.server.ping.PingThread;
@@ -47,6 +46,7 @@ public class Main {
 		loadMySQL();
 		Main.listener = new UserListener();
 		Main.pingThread = new PingThread();
+		Stage.init();
 		Stage.next();
 		
 		Main.server = new WSocketServer(DEFAULT_PORT);

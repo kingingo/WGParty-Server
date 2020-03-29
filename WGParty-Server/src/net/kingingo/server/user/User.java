@@ -77,7 +77,6 @@ public class User {
 		return getUsers().get(webSocket);
 	}
 
-	@Getter
 	@Setter
 	private long timeDifference = 0;
 	
@@ -103,6 +102,10 @@ public class User {
 		this.socket = webSocket;
 		if(webSocket!=null)User.getUsers().put(webSocket, this);
 	} 
+	
+	public long getTimeDifference() {
+		return this.timeDifference+this.SampleRTT;
+	}
 	
 	public void setState(State state) {
 		StateChangeEvent ev = new StateChangeEvent(this, this.state, state);

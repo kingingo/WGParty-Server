@@ -58,7 +58,7 @@ public class UserListener implements EventListener{
 	
 	@EventHandler
 	public void rec(PacketReceiveEvent ev) {
-		if(!(ev.getPacket() instanceof PongPacket))Main.debug(ev.getUser().toString() + " -> "+ev.getPacket().toString());
+		if(!(ev.getPacket() instanceof PongPacket))Main.printf("PACKET","SERVER <= "+ev.getUser().toString()+" ["+ev.getPacket().toString()+"]");
 		
 		if(ev.getPacket() instanceof HandshakePacket) {
 			ev.getUser().load(ev.getPacket(HandshakePacket.class));
@@ -78,6 +78,6 @@ public class UserListener implements EventListener{
 	
 	@EventHandler
 	public void send(PacketSendEvent ev) {
-		if(!(ev.getPacket() instanceof PingPacket))Main.debug(ev.getPacket().toString() + " -> "+ev.getUser().toString());
+		if(!(ev.getPacket() instanceof PingPacket))Main.printf("PACKET","SERVER => "+ev.getUser().toString()+" ["+ev.getPacket().toString()+"]");
 	}
 }

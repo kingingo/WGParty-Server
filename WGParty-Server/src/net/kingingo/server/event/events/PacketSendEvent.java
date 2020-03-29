@@ -14,5 +14,6 @@ public class PacketSendEvent  extends Event implements Cancellable{
 	@Setter
 	private boolean cancelled = false;
 	private User user;
+	@Setter
 	private Packet packet;
 }

@@ -6,10 +6,12 @@ import java.io.IOException;
 
 import lombok.Setter;
 import net.kingingo.server.packets.Packet;
+import net.kingingo.server.stage.Stage;
 @Setter
 public class HandshakeAckPacket extends Packet{
 
 	private String name;
+	private boolean inGame;
 	private boolean accepted;
 	
 	public HandshakeAckPacket() {}
@@ -21,6 +23,7 @@ public class HandshakeAckPacket extends Packet{
 	public HandshakeAckPacket(String name, boolean accepted) {
 		this.name=name;
 		this.accepted=accepted;
+		this.inGame=Stage.inGame();
 	}
 	
 	@Override
@@ -29,11 +32,15 @@ public class HandshakeAckPacket extends Packet{
 	@Override
 	public void writeToOutput(DataOutputStream out) throws IOException {
 		out.writeInt((this.accepted?1:0));
-		if(this.accepted)out.writeUTF(this.name);
+		
+		if(this.accepted) {
+			out.writeUTF(this.name);
+			out.writeBoolean(this.inGame);
+		}
 	}
 
 	public String toString() {
-		return this.getPacketName() + " accepted:"+this.accepted+", name:"+this.name;
+		return this.getPacketName() + " accepted:"+this.accepted+", name:"+this.name+", inGame:"+this.inGame;
 	}
 }
 
