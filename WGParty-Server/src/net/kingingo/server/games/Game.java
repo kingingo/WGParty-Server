@@ -3,6 +3,7 @@ package net.kingingo.server.games;
 import java.io.File;
 
 import lombok.Getter;
+import lombok.Setter;
 import net.kingingo.server.Main;
 import net.kingingo.server.event.EventListener;
 import net.kingingo.server.event.EventManager;
@@ -12,11 +13,13 @@ import net.kingingo.server.stage.Stage;
 import net.kingingo.server.user.User;
 
 public abstract class Game implements EventListener{
-	public static final String IMG_PATH = "images"+File.pathSeparator+"games";
+	public static final String IMG_PATH = "games";
 	@Getter
 	private User user1;
 	@Getter
 	private User user2;
+	@Getter
+	private boolean active = false;
 	
 	public void broadcast(Packet packet) {
 		writeU1(packet);
@@ -36,14 +39,17 @@ public abstract class Game implements EventListener{
 	}
 	
 	public void start(User u1, User u2) {
+		this.active=true;
 		this.user1=u1;
 		this.user2=u2;
 		
-		GameStartPacket packet = new GameStartPacket(getName());
+		GameStartPacket packet = new GameStartPacket(getName().toLowerCase());
 		Stage.broadcast(packet);
 	}
 	
-	public abstract void end();
+	public void end() {
+		this.active=false;
+	}
 	
 	public String getName() {
 		return this.getClass().getSimpleName();

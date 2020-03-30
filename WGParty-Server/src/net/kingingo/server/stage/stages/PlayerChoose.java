@@ -19,7 +19,7 @@ public class PlayerChoose extends Stage{
 	public ArrayList<User> users;
 	
 	public PlayerChoose() {
-		super(TimeSpan.MINUTE/2);
+		super(TimeSpan.SECOND * 20);
 	}
 	
 	public boolean running() {
@@ -31,9 +31,9 @@ public class PlayerChoose extends Stage{
 	public void start() {
 		super.start();
 		setCountdown("game starts in");
-		users = new ArrayList<User>(User.getAllStats().keySet());
-		u1 = User.getUser("Felix");
-		u2 = User.getUser("Oskar");
+		this.users = new ArrayList<User>(User.getAllStats().keySet());
+		this.u1 = User.getUser("Felix");
+		this.u2 = User.getUser("Oskar");
 
 		StartMatchPacket start = new StartMatchPacket(u1,u2,users);
 		broadcast(start);

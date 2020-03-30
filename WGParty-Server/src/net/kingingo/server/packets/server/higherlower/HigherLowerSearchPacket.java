@@ -13,7 +13,7 @@ public class HigherLowerSearchPacket extends Packet{
 	public HigherLowerSearchPacket() {}
 	
 	public HigherLowerSearchPacket(Search[] searchs) throws Exception {
-		if(this.searchs.length!=2)throw new Exception("There should be just 2 Objects!");
+		if(searchs.length!=2)throw new Exception("There should be just 2 Objects!");
 		this.searchs=searchs;
 	}
 	

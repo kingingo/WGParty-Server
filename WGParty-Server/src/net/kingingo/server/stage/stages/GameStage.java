@@ -16,7 +16,7 @@ public class GameStage extends Stage{
 	public Game current;
 	
 	public GameStage() {
-		super(TimeSpan.SECOND*10);
+		super(TimeSpan.SECOND*60);
 		
 		this.games.add(new HigherLower());
 	}
@@ -40,10 +40,7 @@ public class GameStage extends Stage{
 	public void start() {
 		super.start();
 		this.current = randomGame();
-		this.current.start();
-		
-		
-		
+		this.current.start(Stage.get(PlayerChoose.class).u1,Stage.get(PlayerChoose.class).u2);
 		
 		setCountdown("game ends in");
 		printf("start Game!");
