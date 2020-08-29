@@ -38,7 +38,7 @@ public class WSocketServer extends WebSocketServer{
 		return write(user.getSocket(),packet);
 	}
 	
-	public boolean write(WebSocket conn, Packet packet) {
+	public boolean write(WebSocket conn, Packet packet) {	
 		PacketSendEvent ev = new PacketSendEvent(false, User.getUser(conn), packet);
 		EventManager.callEvent(ev);
 		

@@ -13,6 +13,7 @@ public class MatchPacket extends Packet{
 
 	private User winner;
 	private User loser;
+	private boolean drawn;
 	private ArrayList<Alk> alk;
 	
 	public MatchPacket() {}
@@ -20,6 +21,7 @@ public class MatchPacket extends Packet{
 	public MatchPacket(User winner, User loser, ArrayList<Alk> alk) {
 		this.winner = winner;
 		this.loser = loser;
+		this.drawn = (this.winner==null&&this.loser==null?true:false);
 		this.alk=alk;
 	}
 	
@@ -28,17 +30,21 @@ public class MatchPacket extends Packet{
 
 	@Override
 	public void writeToOutput(DataOutputStream out) throws IOException {
-		out.writeUTF(this.winner.getName());
-		out.writeUTF(this.winner.getUuid().toString());
+		out.writeBoolean(this.drawn);
+		if(!this.drawn) {
+			out.writeUTF(this.winner.getName());
+			out.writeUTF(this.winner.getUuid().toString());
+			
+			out.writeUTF(this.loser.getName());
+			out.writeUTF(this.loser.getUuid().toString());
 		
-		out.writeUTF(this.loser.getName());
-		out.writeUTF(this.loser.getUuid().toString());
 		
-		out.writeInt(this.alk.size());
-		for(Alk a : this.alk)a.writeToOutput(out);
+			out.writeInt(this.alk.size());
+			for(Alk a : this.alk)a.writeToOutput(out);
+		}
 	}
 
 	public String toString() {
-		return "Winner:"+this.winner.getName()+" Loser:"+this.loser.getName()+" Alk:"+this.alk.size();
+		return "Unentschieden:"+this.drawn+" Winner:"+this.winner+" Loser:"+this.loser+" Alk:"+this.alk.size();
 	}
 }

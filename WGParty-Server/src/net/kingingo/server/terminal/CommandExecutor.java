@@ -4,6 +4,10 @@ public interface CommandExecutor {
 		return getClass().getSimpleName().toLowerCase().replaceAll("command", "");
 	}
 	
+	public default boolean isAlias(String alias) {
+		return false;
+	}
+	
 	public String getDescription();
 	
 	public void onCommand(String[] args);

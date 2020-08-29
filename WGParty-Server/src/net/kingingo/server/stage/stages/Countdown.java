@@ -27,21 +27,20 @@ public class Countdown extends Stage{
 	 * Set Time Difference between User and Server!
 	 * @param ev
 	 */
-//	@EventHandler
-//	public void send(PacketSendEvent ev) {
-//		if(ev.getPacket() instanceof CountdownAckPacket) {
-//			CountdownAckPacket ack = ((CountdownAckPacket) ev.getPacket()).clone();
-//			Main.printf("Time Difference "+ev.getUser().getTimeDifference()+"ms from "+ev.getUser().getName());
-//			ack.time += ev.getUser().getTimeDifference();
-//			ev.setPacket(ack);
-//		}
-//	}
+	@EventHandler
+	public void send(PacketSendEvent ev) {
+		if(ev.getPacket() instanceof CountdownAckPacket) {
+			CountdownAckPacket ack = ((CountdownAckPacket) ev.getPacket());
+			Main.printf("Time Difference "+ev.getUser().getTimeDifference()+"ms from "+ev.getUser().getName());
+			ack.setTime(ack.time - ev.getUser().getTimeDifference());
+		}
+	}
 	
 	@EventHandler
 	public void rec(PacketReceiveEvent ev) {
 		if(!isActive())return;
 		if(ev.getPacket() instanceof CountdownPacket) {
-			ev.getUser().setTimeDifference(System.currentTimeMillis()-ev.getPacket(CountdownPacket.class).getTime());
+			ev.getUser().setTimeDifference(System.currentTimeMillis() - ev.getPacket(CountdownPacket.class).getTime());
 			
 			CountdownAckPacket ack = new CountdownAckPacket(getEnd());
 			ev.getUser().write(ack);
@@ -79,8 +78,8 @@ public class Countdown extends Stage{
 	
 	public String toString() {
 		if(!isActive())
-			return "00:00:00";
+			return super.toString();
 		else
-			return Utils.toTime(getEnd()-System.currentTimeMillis());
+			return super.toString() + " Time:" + Utils.toTime(getEnd()-System.currentTimeMillis());
 	}
 }

@@ -13,6 +13,7 @@ import lombok.Getter;
 import lombok.Setter;
 import net.kingingo.server.Main;
 import net.kingingo.server.event.EventManager;
+import net.kingingo.server.event.events.SpectateChangeEvent;
 import net.kingingo.server.event.events.StateChangeEvent;
 import net.kingingo.server.mysql.MySQL;
 import net.kingingo.server.packets.Packet;
@@ -28,7 +29,7 @@ public class User {
 	@Getter
 	private static HashMap<WebSocket, User> users = new HashMap<WebSocket, User>();
 	private static HashMap<UUID, User> uuids = new HashMap<UUID, User>();
-	private static HashMap<User, Stats> stats = new HashMap<User, Stats>();
+	private static HashMap<User, UserStats> stats = new HashMap<User, UserStats>();
 	
 	public static void broadcast(Packet packet) {
 		broadcast(packet, null);
@@ -49,16 +50,17 @@ public class User {
 		createTestUser("Leon",10,0);
 	}
 	
-	private static void createTestUser(String name,int wins,int loses) {
+	public static User createTestUser(String name,int wins,int loses) {
 		User u = new User(null);
 		u.uuid = UUID.nameUUIDFromBytes(name.getBytes());
 		u.setName(name);
-		stats.put(u, new Stats(u));
-		u.getStats().setLoses(loses);
-		u.getStats().setWins(wins);
+		stats.put(u, new UserStats(u));
+		u.getStats().add("loses", loses);
+		u.getStats().add("wins", wins);
+		return u;
 	}
 	
-	public static HashMap<User, Stats> getAllStats(){
+	public static HashMap<User, UserStats> getAllStats(){
 		return stats;
 	}
 	
@@ -77,7 +79,6 @@ public class User {
 		return getUsers().get(webSocket);
 	}
 
-	@Setter
 	private long timeDifference = 0;
 	
 	@Getter
@@ -121,6 +122,16 @@ public class User {
 		return this.SampleRTT;
 	}
 	
+	public void setTimeDifference(long time) {
+		time -= - getRTT();
+		if(!isOnline())return;
+		if(timeDifference == 0) {
+			timeDifference = time;
+		}else {
+			this.timeDifference = (long) ((1-ALPHA) * time + ALPHA * this.timeDifference);
+		}
+	}
+	
 	public void RTT() {
 		if(!isOnline())return;
 		if(estimatedRTT==0) {
@@ -134,7 +145,7 @@ public class User {
 		}
 	}
 	
-	public Stats getStats() {
+	public UserStats getStats() {
 		return stats.get(this);
 	}
 
@@ -150,7 +161,7 @@ public class User {
 		this.uuid = UUID.randomUUID();
 		this.name = packet.getName();
 		setState(State.REGISTER_PAGE);
-		User.stats.put(this, new Stats(this));
+		User.stats.put(this, new UserStats(this));
 		User.uuids.put(this.uuid, this);
 		try {
 			Utils.createDirectorie(getPath());
@@ -164,7 +175,7 @@ public class User {
 			e.printStackTrace();
 		}
 		
-		HashMap<User,Stats> s = new HashMap<User,Stats>();
+		HashMap<User,UserStats> s = new HashMap<User,UserStats>();
 		s.put(this, getStats());
 		
 		StatsAckPacket stats = new StatsAckPacket(s);
@@ -225,8 +236,7 @@ public class User {
 					while(rs.next()) {
 						count++;
 						user.setName(rs.getString("name"));
-						User.stats.put(user, new Stats(user));
-						user.getStats().loadFromResultSet(rs);
+						User.stats.put(user, new UserStats(user));
 					}
 					
 					if (count == 1 && user.getName() != null) {
@@ -260,9 +270,14 @@ public class User {
 			builder.append("	time difference: "+this.timeDifference+"\n");
 			builder.append("	RTT: "+getRTT()+"\n");
 		}
-		builder.append("	"+getStats().toString()+"\n");
+		builder.append(getStats().toString()+"\n");
 		
 		return builder.toString();
+	}
+	
+	public boolean equalsUUID(User u) {
+		if(u==null)return false;
+		return u.getUuid() == getUuid();
 	}
 	
 	public String toString() {

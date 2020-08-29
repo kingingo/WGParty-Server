@@ -8,12 +8,16 @@ import net.kingingo.server.packets.Packet;
 
 public class HigherLowerSearchChoosePacket extends Packet{
 	public boolean higher;
+	public int leftIndex;
+	public int rightIndex;
 	
 	public HigherLowerSearchChoosePacket() {}
 	
 	@Override
 	public void parseFromInput(DataInputStream in) throws IOException {
 		this.higher = in.readBoolean();
+		this.leftIndex = in.readInt();
+		this.rightIndex = in.readInt();
 	}
 
 	@Override

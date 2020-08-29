@@ -3,14 +3,14 @@ package net.kingingo.server.event;
 import lombok.Getter;
 
 public enum EventPriority {
-LOWEST(0), //Wird als erstes ausgef�hrt
-LOW(1),
+LOWEST(4),//Wird als letztes ausgef�hrt 
+LOW(3),
 MEDIUM(2),
-HIGH(3),
-HIGHEST(4); //Wird als letztes ausgef�hrt
+HIGH(1),
+HIGHEST(0);//Wird als erstes ausgef�hrt 
 
 @Getter
-private int priority=0;
+private int priority=2;
 EventPriority(int priority){
 	this.priority=priority;
 }

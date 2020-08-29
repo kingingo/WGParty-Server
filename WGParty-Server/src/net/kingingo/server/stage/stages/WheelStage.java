@@ -1,12 +1,9 @@
 package net.kingingo.server.stage.stages;
 
-import net.kingingo.server.Main;
 import net.kingingo.server.event.EventHandler;
 import net.kingingo.server.event.events.PacketReceiveEvent;
-import net.kingingo.server.event.events.StateChangeEvent;
 import net.kingingo.server.packets.client.WheelSpinPacket;
 import net.kingingo.server.packets.server.MatchPacket;
-import net.kingingo.server.packets.server.StartMatchPacket;
 import net.kingingo.server.stage.Stage;
 import net.kingingo.server.user.State;
 import net.kingingo.server.user.User;
@@ -27,8 +24,6 @@ public class WheelStage extends Stage{
 		if(ev.getPacket() instanceof WheelSpinPacket) {
 			this.rolled=System.currentTimeMillis();
 			
-			
-			
 			State state;
 			for(User user : User.getUsers().values()) {
 				state = user.getState();
@@ -38,7 +33,6 @@ public class WheelStage extends Stage{
 			
 		}
 	}
-	
 
 	public boolean running() {
 		if(this.rolled != 0) {
@@ -65,7 +59,8 @@ public class WheelStage extends Stage{
 		setCountdown("time to wheel");
 		this.rolled=0;
 		printf("Start Celebration and init Wheel");
-		MatchPacket packet = new MatchPacket(User.getUser("Oskar"), User.getUser("Felix"), Wheel.getInstance().getAlk());
+		GameStage stage = Stage.get(GameStage.class);
+		MatchPacket packet = new MatchPacket(stage.win, stage.lose, Wheel.getInstance().getAlk());
 		broadcast(packet);
 	}
 }

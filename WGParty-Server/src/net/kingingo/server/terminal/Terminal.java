@@ -74,8 +74,8 @@ public class Terminal implements Runnable{
 			for(int i = 1; i < splitted.length; i++)args[i-1]=splitted[i];
 			
 			for(CommandExecutor cmd : commands) {
-				if(cmd.getCommand().equalsIgnoreCase(command)) {
-					cmd.onCommand(args);
+				if(cmd.getCommand().equalsIgnoreCase(command) || cmd.isAlias(command)) {
+					try { cmd.onCommand(args); }catch(Exception e) {e.printStackTrace();}
 					return true;
 				}
 			}

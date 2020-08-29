@@ -5,6 +5,7 @@ import java.util.UUID;
 import net.kingingo.server.event.EventHandler;
 import net.kingingo.server.event.EventListener;
 import net.kingingo.server.event.EventManager;
+import net.kingingo.server.event.EventPriority;
 import net.kingingo.server.event.events.ClientConnectEvent;
 import net.kingingo.server.event.events.ClientDisonnectEvent;
 import net.kingingo.server.event.events.ClientErrorEvent;
@@ -16,6 +17,7 @@ import net.kingingo.server.packets.client.PongPacket;
 import net.kingingo.server.packets.client.RegisterPacket;
 import net.kingingo.server.packets.client.StatsPacket;
 import net.kingingo.server.packets.client.WheelSpinPacket;
+import net.kingingo.server.packets.client.games.PlayerReadyPacket;
 import net.kingingo.server.packets.server.HandshakeAckPacket;
 import net.kingingo.server.packets.server.IdsPacket;
 import net.kingingo.server.packets.server.PingPacket;
@@ -45,6 +47,7 @@ public class UserListener implements EventListener{
 	@EventHandler
 	public void change(StateChangeEvent ev) {
 		if(ev.getNewState() == State.OFFLINE) {
+			ev.getUser().getStats().save();
 			ev.getUser().setOffline(System.currentTimeMillis());
 		} else {
 			ev.getUser().setOffline(0);
@@ -58,8 +61,6 @@ public class UserListener implements EventListener{
 	
 	@EventHandler
 	public void rec(PacketReceiveEvent ev) {
-		if(!(ev.getPacket() instanceof PongPacket))Main.printf("PACKET","SERVER <= "+ev.getUser().toString()+" ["+ev.getPacket().toString()+"]");
-		
 		if(ev.getPacket() instanceof HandshakePacket) {
 			ev.getUser().load(ev.getPacket(HandshakePacket.class));
 		}else if(ev.getPacket() instanceof RegisterPacket) {
@@ -75,9 +76,14 @@ public class UserListener implements EventListener{
 			}
 		}
 	}
+
+	@EventHandler(priority=EventPriority.HIGHEST)
+	public void recm(PacketReceiveEvent ev) {
+		if(!(ev.getPacket() instanceof PongPacket))Main.printf("PACKET REC","SERVER <= "+ev.getUser().toString()+" ["+ev.getPacket().toString()+"]");
+	}
 	
-	@EventHandler
+	@EventHandler(priority=EventPriority.HIGHEST)
 	public void send(PacketSendEvent ev) {
-		if(!(ev.getPacket() instanceof PingPacket))Main.printf("PACKET","SERVER => "+ev.getUser().toString()+" ["+ev.getPacket().toString()+"]");
+		if(!(ev.getPacket() instanceof PingPacket))Main.printf("PACKET SEND","SERVER => "+ev.getUser().toString()+" ["+ev.getPacket().toString()+"]");
 	}
 }

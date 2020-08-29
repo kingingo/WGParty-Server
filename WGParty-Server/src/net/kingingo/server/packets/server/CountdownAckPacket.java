@@ -4,9 +4,11 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
+import lombok.Setter;
 import net.kingingo.server.packets.Packet;
 
 public class CountdownAckPacket extends Packet{
+	@Setter
 	public long time;
 	public String text;
 	

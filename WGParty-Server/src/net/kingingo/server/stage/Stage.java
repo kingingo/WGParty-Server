@@ -12,6 +12,7 @@ import net.kingingo.server.packets.server.CountdownAckPacket;
 import net.kingingo.server.stage.stages.Countdown;
 import net.kingingo.server.stage.stages.GameStage;
 import net.kingingo.server.stage.stages.PlayerChoose;
+import net.kingingo.server.stage.stages.ReadyStage;
 import net.kingingo.server.stage.stages.WheelStage;
 import net.kingingo.server.user.State;
 import net.kingingo.server.user.User;
@@ -29,12 +30,26 @@ public abstract class Stage implements EventListener, Runnable{
 	public static void init() {
 		new Countdown();
 		new PlayerChoose();
+		new ReadyStage();
 		new GameStage();
 		new WheelStage();
 	}
 	
+	public static <T extends Stage> boolean is(Class<T> clazz) {
+		return currentStage().getClass() == clazz;
+	}
+	
 	public static boolean inGame() {
 		return !(currentStage() instanceof Countdown);
+	}
+	
+	public static <T extends Stage> T get(int index) {
+		int i = 0;
+		for(Class<? extends Stage> clazz : stages_order) {
+			if(index == i)return (T) Stage.get(clazz);
+			i++;
+		}
+		return null;
 	}
 	
 	public static <T extends Stage> T get(Class<T> clazz) {
@@ -42,12 +57,7 @@ public abstract class Stage implements EventListener, Runnable{
 	}
 	
 	public static Stage currentStage() {
-		int i = 0;
-		for(Class<? extends Stage> clazz : stages_order) {
-			if(currentStage == i)return Stage.stages.get(clazz);
-			i++;
-		}
-		return null;
+		return get(currentStage);
 	}
 	
 	public static <T extends Stage> T jump(Class<T> clazz) {
@@ -88,10 +98,13 @@ public abstract class Stage implements EventListener, Runnable{
 				}
 			}
 		}
+		Stage old = currentStage();
 		
 		currentStage++;
 		Stage s = currentStage();
+		
 		s.start();
+		Main.printf("STAGE NEXT", currentStage+"("+get((currentStage-1))+") old:"+old+" new:"+s);
 		return s;
 	}
 	
@@ -103,7 +116,6 @@ public abstract class Stage implements EventListener, Runnable{
 	private boolean active = false;
 	private Thread thread;
 	private long timeout;
-	private long start;
 	
 	public Stage(long timeout) {
 		this.timeout=timeout;
@@ -119,11 +131,13 @@ public abstract class Stage implements EventListener, Runnable{
 	public void run() {
 		while(this.active) {
 			try {
-				this.start = System.currentTimeMillis();
 				Thread.sleep(this.timeout);
 				if(this.active) {
 					boolean b = this.running();
-					if(b)Stage.next();
+					if(b) {
+						Stage.next();
+						break;
+					}
 				}
 			} catch (InterruptedException e) {
 				e.printStackTrace();

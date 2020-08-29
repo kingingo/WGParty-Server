@@ -6,6 +6,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import net.kingingo.server.Main;
 import net.kingingo.server.utils.Callback;
 import net.kingingo.server.utils.TimeSpan;
 
@@ -29,10 +30,9 @@ public class MySQL {
 			MySQL.host = host;
 			MySQL.db = db;
 			MySQL.port = port;
-			connect();
-			return true;
+			return connect();
 		}
-		return false;
+		return true;
 	}
 
 	public static void close() {
@@ -73,7 +73,7 @@ public class MySQL {
 		Update("CREATE TABLE IF NOT EXISTS " + table + " (" + content + ");");
 	}
 
-	public static void connect() {
+	public static boolean connect() {
 		try {
 			if (connection == null || connection.isClosed()) {
 				connection = DriverManager.getConnection("jdbc:mysql://" + host + ":" + port + "/" + db
@@ -81,9 +81,11 @@ public class MySQL {
 						user, pass);
 				lastRequest=System.currentTimeMillis();
 			}
+			return true;
 		} catch (SQLException e) {
-			e.printStackTrace();
+//			e.printStackTrace();
 		}
+		return false;
 	}
 	
 	public static Statement getStatement(String sql) throws SQLException {
@@ -104,6 +106,19 @@ public class MySQL {
 		return connection.createStatement();
 	}
 
+	public static boolean Update(String sql, Callback<PreparedStatement> callback) {
+		try {
+			PreparedStatement stmt = connection.prepareStatement(sql);
+			callback.run(stmt);
+			stmt.executeUpdate();
+			stmt.close();
+			return true;
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			return false;
+		}
+	}
+	
 	public static boolean Update(String qry) {
 		try {
 			Statement stmt = getStatement();
@@ -214,6 +229,10 @@ public class MySQL {
 	}
 
 	public static void asyncQuery(final String qry, Callback<ResultSet> callback) {
+		asyncQuery(qry, callback, null);
+	}
+	
+	public static void asyncQuery(final String qry, Callback<ResultSet> callback, Callback<?> after) {
 		new Thread(new Runnable() {
 
 			@Override
@@ -222,6 +241,7 @@ public class MySQL {
 					Statement stmt = getStatement();
 					callback.run(stmt.executeQuery(qry));
 					stmt.close();
+					if(after!=null)after.run(null);
 				} catch (Exception ex) {
 					ex.printStackTrace();
 				}
