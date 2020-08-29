@@ -112,6 +112,14 @@ public abstract class Stage implements EventListener, Runnable{
 		User.broadcast(packet, State.INGAME);
 	}
 	
+	public static User getUser2() {
+		return Stage.get(PlayerChoose.class).u2;
+	}
+	
+	public static User getUser1() {
+		return Stage.get(PlayerChoose.class).u1;
+	}
+	
 	@Getter
 	private boolean active = false;
 	private Thread thread;

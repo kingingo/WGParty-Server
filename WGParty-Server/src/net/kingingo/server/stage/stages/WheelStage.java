@@ -1,5 +1,8 @@
 package net.kingingo.server.stage.stages;
 
+import java.util.Random;
+
+import net.kingingo.server.Main;
 import net.kingingo.server.event.EventHandler;
 import net.kingingo.server.event.events.PacketReceiveEvent;
 import net.kingingo.server.packets.client.WheelSpinPacket;
@@ -30,26 +33,28 @@ public class WheelStage extends Stage{
 				if(user.getUuid() != ev.getUser().getUuid() && state == State.INGAME)
 					user.write(ev.getPacket());
 			}
-			
 		}
 	}
 
 	public boolean running() {
-		if(this.rolled != 0) {
-			long diff = System.currentTimeMillis() - this.rolled;
-			
-			if(diff <= TimeSpan.SECOND*7) {
-				printf("Wheel sleeps for "+diff+"ms");
-				try {
-					Thread.sleep(diff);
-					printf("Wheel waked up");
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
+		if(this.rolled==0) {
+			this.rolled=System.currentTimeMillis();
+			broadcast(new WheelSpinPacket(new Random().nextFloat()));
+		}
+		
+		long diff = System.currentTimeMillis() - this.rolled;
+		
+		if(diff <= TimeSpan.SECOND*4) {
+			diff = TimeSpan.SECOND*4 - diff;
+			printf("Wheel sleeps for "+diff+"ms");
+			try {
+				Thread.sleep(diff);
+				printf("Wheel waked up");
+			} catch (InterruptedException e) {
+				e.printStackTrace();
 			}
 		}
 		
-		printf(this.rolled==0 ? "Wheel has been rolled :)" : "TimeOut Wheel hasn't been rolled...");
 		return true;
 	}
 	

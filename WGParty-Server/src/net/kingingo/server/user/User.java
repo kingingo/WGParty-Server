@@ -152,6 +152,10 @@ public class User {
 	public void init(String name) {
 		this.name = name;
 	}
+	
+	public boolean isUnknown() {
+		return this.uuid == null;
+	}
 
 	public boolean isTester() {
 		return this.getSocket()==null;
@@ -277,7 +281,7 @@ public class User {
 	
 	public boolean equalsUUID(User u) {
 		if(u==null)return false;
-		return u.getUuid() == getUuid();
+		return u.getUuid().toString().equalsIgnoreCase(getUuid().toString());
 	}
 	
 	public String toString() {

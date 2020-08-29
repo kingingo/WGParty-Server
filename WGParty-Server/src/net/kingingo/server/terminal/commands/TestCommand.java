@@ -5,6 +5,9 @@ import java.util.ArrayList;
 import com.google.common.collect.Lists;
 
 import net.kingingo.server.Main;
+import net.kingingo.server.event.Event;
+import net.kingingo.server.event.EventComp;
+import net.kingingo.server.event.EventManager;
 import net.kingingo.server.packets.server.MatchPacket;
 import net.kingingo.server.stage.Stage;
 import net.kingingo.server.stage.stages.Countdown;
@@ -39,6 +42,16 @@ public class TestCommand implements CommandExecutor{
 				user1.getStats().save();
 			}else Main.debug("User not found "+args[1]);
 			
+			break;
+		case "EVENTS":
+			for(Class<? extends Event> clazz : EventManager.events.keySet()) {
+				System.out.println("Clazz: "+clazz.getName());
+				
+				ArrayList<EventComp> comps = EventManager.events.get(clazz);
+				for(EventComp comp : comps) {
+					System.out.print(comp);
+				}
+			}
 			break;
 		case "STATS":
 			int tester=0;

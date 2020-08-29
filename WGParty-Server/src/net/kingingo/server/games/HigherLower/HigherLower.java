@@ -13,13 +13,18 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 
+import net.kingingo.server.Main;
 import net.kingingo.server.event.EventHandler;
 import net.kingingo.server.event.events.PacketReceiveEvent;
+import net.kingingo.server.event.events.StateChangeEvent;
 import net.kingingo.server.games.Game;
 import net.kingingo.server.packets.client.games.GameEndPacket;
 import net.kingingo.server.packets.client.games.GameStartAckPacket;
 import net.kingingo.server.packets.client.higherlower.HigherLowerSearchChoosePacket;
+import net.kingingo.server.packets.server.higherlower.HigherLowerAnsweredPacket;
 import net.kingingo.server.packets.server.higherlower.HigherLowerSearchPacket;
+import net.kingingo.server.stage.Stage;
+import net.kingingo.server.user.State;
 import net.kingingo.server.user.User;
 import net.kingingo.server.utils.Callback;
 import net.kingingo.server.utils.Utils;
@@ -72,8 +77,11 @@ public class HigherLower extends Game{
 						this.user2_win++;
 					}
 					print(ev.getUser().getName()+" +1");
+					
+					Stage.broadcast(new HigherLowerAnsweredPacket(ev.getUser().getUuid(), true));
 				} else {
 					print(ev.getUser().getName()+" lost");
+					Stage.broadcast(new HigherLowerAnsweredPacket(ev.getUser().getUuid(), false));
 				}
 			}else if(ev.getPacket() instanceof GameStartAckPacket) {
 				try {

@@ -1,5 +1,6 @@
 package net.kingingo.server.event;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -53,7 +54,7 @@ public class EventManager {
 			if(registered.contains(listener))return;
 			registered.add(listener);
 			//Sucht alle Methoden in dem Listener raus
-			Method[] methods = listener.getClass().getDeclaredMethods();
+			Method[] methods = listener.getClass().getMethods();
 	        for (int i = 0; i < methods.length; ++i) {
 	        	//Filtert alle EventHandler raus!
 	            EventHandler eventHandler = methods[i].getAnnotation(EventHandler.class);
@@ -79,6 +80,9 @@ public class EventManager {
 			for(int i = 0; i < list.size(); i++) {
 				try {
 					list.get(i).call(event);
+                } catch (InvocationTargetException e) {
+                    e.printStackTrace();
+                    e.getTargetException().printStackTrace();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

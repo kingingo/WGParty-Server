@@ -34,7 +34,6 @@ public class UserListener implements EventListener{
 	@EventHandler
 	public void connect(ClientConnectEvent ev) {
 		Main.printf(ev.getUser(),"connected "+ev.getHandshake().getResourceDescriptor());
-		
 		ev.getUser().write(new IdsPacket());
 	}
 	
@@ -47,7 +46,9 @@ public class UserListener implements EventListener{
 	@EventHandler
 	public void change(StateChangeEvent ev) {
 		if(ev.getNewState() == State.OFFLINE) {
-			ev.getUser().getStats().save();
+			if(!ev.getUser().isUnknown()) {
+				ev.getUser().getStats().save();
+			}
 			ev.getUser().setOffline(System.currentTimeMillis());
 		} else {
 			ev.getUser().setOffline(0);

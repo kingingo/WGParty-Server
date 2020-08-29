@@ -67,8 +67,12 @@ public class WSocketServer extends WebSocketServer{
 
 	@Override
 	public void onClose(WebSocket conn, int code, String reason, boolean remote) {
-		ClientDisonnectEvent ev = new ClientDisonnectEvent(User.getUser(conn),code,reason,remote);
-		EventManager.callEvent(ev);
+		User user = User.getUser(conn);
+		
+		if(user!=null) {
+			ClientDisonnectEvent ev = new ClientDisonnectEvent(User.getUser(conn),code,reason,remote);
+			EventManager.callEvent(ev);
+		}else Main.error("Disconnect User==null ");
 	}
 
 	@Override

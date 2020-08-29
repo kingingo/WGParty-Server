@@ -31,4 +31,11 @@ public class EventComp implements Comparable<EventComp>{
 		return priority.getPriority() - o.getPriority().getPriority();
 	}
 	
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		builder.append("	Listener: "+listener.toString()+"\n");
+		builder.append("	Method: "+method.getName()+"\n");
+		builder.append(" 	Priority: "+priority+"\n");
+		return builder.toString();
+	}
 }

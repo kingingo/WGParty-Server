@@ -5,9 +5,11 @@ import java.util.ArrayList;
 import lombok.Getter;
 import net.kingingo.server.event.EventHandler;
 import net.kingingo.server.event.events.PacketReceiveEvent;
+import net.kingingo.server.event.events.StateChangeEvent;
 import net.kingingo.server.games.Game;
 import net.kingingo.server.games.HigherLower.HigherLower;
 import net.kingingo.server.stage.Stage;
+import net.kingingo.server.user.State;
 import net.kingingo.server.user.User;
 import net.kingingo.server.utils.Callback;
 import net.kingingo.server.utils.TimeSpan;
@@ -70,7 +72,7 @@ public class GameStage extends Stage{
 		this.win = null;
 		this.lose = null;
 		this.current = randomGame();
-		this.current.start(Stage.get(PlayerChoose.class).u1,Stage.get(PlayerChoose.class).u2);
+		this.current.start(getUser1(),getUser2());
 		
 		setCountdown("game ends in");
 		printf("start Game!");
