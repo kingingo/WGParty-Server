@@ -1,22 +1,14 @@
 package net.kingingo.server.games.HigherLower;
 
-import java.io.BufferedReader;
 import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.util.ArrayList;
 
-import net.kingingo.server.Main;
 import net.kingingo.server.event.EventHandler;
 import net.kingingo.server.event.events.PacketReceiveEvent;
-import net.kingingo.server.event.events.StateChangeEvent;
 import net.kingingo.server.games.Game;
 import net.kingingo.server.packets.client.games.GameEndPacket;
 import net.kingingo.server.packets.client.games.GameStartAckPacket;
@@ -24,7 +16,6 @@ import net.kingingo.server.packets.client.higherlower.HigherLowerSearchChoosePac
 import net.kingingo.server.packets.server.higherlower.HigherLowerAnsweredPacket;
 import net.kingingo.server.packets.server.higherlower.HigherLowerSearchPacket;
 import net.kingingo.server.stage.Stage;
-import net.kingingo.server.user.State;
 import net.kingingo.server.user.User;
 import net.kingingo.server.utils.Callback;
 import net.kingingo.server.utils.Utils;
@@ -32,10 +23,6 @@ import net.kingingo.server.utils.Utils;
 public class HigherLower extends Game{
 
 	private ArrayList<Search> searchs = new ArrayList<>();
-	
-	private int user1_win = 0;
-	private int user2_win = 0;
-	
 	private Search[] search;
 	
 	public HigherLower(Callback<User[]> endCallback) {
@@ -72,9 +59,9 @@ public class HigherLower extends Game{
 				
 				if(win) {
 					if(ev.getUser() == getUser1()) {
-						this.user1_win++;
+						this.user1_score++;
 					}else if(ev.getUser() == getUser2()){
-						this.user2_win++;
+						this.user2_score++;
 					}
 					print(ev.getUser().getName()+" +1");
 					
@@ -120,41 +107,10 @@ public class HigherLower extends Game{
 	
 	public void start(User u1, User u2) {
 		super.start(u1, u2);
-		reset();
 		this.search = randSearch(6);
 		
 		for(int i = 0; i < this.search.length; i+=2) {
 			print("\""+search[i].request + "\"("+search[i].amount+") and \"" + search[i+1].request+"\"("+search[i+1].amount+")");
 		}
 	}
-
-	public void reset() {
-		this.user1_win=0;
-		this.user2_win=0;
-	}
-
-	public void end() {
-		User win = null;
-		User lose = null;
-		
-		if(this.user1_win > this.user2_win) {
-			win = this.getUser1();
-			lose = this.getUser2();
-		}else if(this.user1_win < this.user2_win){
-			win = this.getUser2();
-			lose = this.getUser1();
-		}else{
-			win = null;
-			lose = null;
-		}
-		print("END -> win:"+win+" lose:"+lose);
-		
-		end(win,lose);
-	}
-	
-	public void end(User win, User lose) {
-		super.end(win, lose);
-		reset();
-	}
-
 }

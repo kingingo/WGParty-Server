@@ -18,6 +18,7 @@ import net.kingingo.server.terminal.CommandExecutor;
 import net.kingingo.server.user.State;
 import net.kingingo.server.user.UserStats;
 import net.kingingo.server.user.User;
+import net.kingingo.server.utils.TimeSpan;
 import net.kingingo.server.utils.Utils;
 import net.kingingo.server.wheel.Wheel;
 
@@ -27,6 +28,12 @@ public class TestCommand implements CommandExecutor{
 	public void onCommand(String[] args) {
 		
 		switch(args[0].toUpperCase()) {
+		case "SETTIME":
+			long time = Integer.valueOf(args[1]) * TimeSpan.MINUTE;
+			
+			Stage.currentStage().setTime(time);
+			Main.printf(Stage.currentStage().getClass().getSimpleName()+" set time to "+time);
+			break;
 		case "START":
 			PlayerChoose.start_u1 = (args.length>=2 ? User.getUser(args[1]) : null);
 			PlayerChoose.start_u2 = (args.length>=3 ? User.getUser(args[2]) : null);

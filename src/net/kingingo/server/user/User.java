@@ -4,10 +4,13 @@ import java.io.File;
 import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.UUID;
 
 import org.java_websocket.WebSocket;
+import org.java_websocket.enums.ReadyState;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -35,9 +38,18 @@ public class User {
 		broadcast(packet, null);
 	}
 	
+
 	public static void broadcast(Packet packet,State st) {
+		broadcast(packet, st, null);
+	}
+	
+	public static void broadcast(Packet packet,State st, List<User> blackList) {
 		for(User u : users.values()) {
-			if(st == null || st == u.getState())u.write(packet);
+			if(st == null || st == u.getState()) {
+				if(blackList == null || !blackList.contains(u)) {
+					u.write(packet);
+				}
+			}
 		}
 	}
 	
@@ -205,7 +217,9 @@ public class User {
 		if(isTester())return;
 		if(!isOnline() && !(packet instanceof HandshakeAckPacket))return;
 		if(!getSocket().isOpen() || getSocket().isClosed())return;
-		Main.getServer().write(this, packet);
+		if(getSocket().getReadyState() != ReadyState.OPEN) {
+			Main.debug("can't send "+toString()+" "+packet.getPacketName()+" ReadyStage:"+getSocket().getReadyState().toString());
+		}else Main.getServer().write(this, packet);
 	}
 	
 	public void setSocket(WebSocket socket) {

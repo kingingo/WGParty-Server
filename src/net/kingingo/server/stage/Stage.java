@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import lombok.Getter;
+import lombok.Setter;
 import net.kingingo.server.Main;
 import net.kingingo.server.event.EventListener;
 import net.kingingo.server.event.EventManager;
@@ -123,7 +124,9 @@ public abstract class Stage implements EventListener, Runnable{
 	@Getter
 	private boolean active = false;
 	private Thread thread;
-	private long timeout;
+	@Getter
+	protected long timeout;
+	protected String previousText;
 	
 	public Stage(long timeout) {
 		this.timeout=timeout;
@@ -132,8 +135,20 @@ public abstract class Stage implements EventListener, Runnable{
 	}
 	
 	public void setCountdown(String text) {
+		this.previousText=text;
 		CountdownAckPacket packet = new CountdownAckPacket(System.currentTimeMillis()+this.timeout,text);
 		broadcast(packet);
+	}
+	
+	public void setTime(long time) {
+		this.timeout = time;
+		this.active=false;
+		this.thread.interrupt();
+		
+		this.thread = new Thread(this);
+		this.active=true;
+		this.thread.start();
+		setCountdown(previousText);
 	}
 	
 	public void run() {
@@ -147,9 +162,7 @@ public abstract class Stage implements EventListener, Runnable{
 						break;
 					}
 				}
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
+			} catch (InterruptedException e) {}
 		}
 	}
 	

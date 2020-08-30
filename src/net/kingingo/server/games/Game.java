@@ -5,9 +5,15 @@ import net.kingingo.server.Main;
 import net.kingingo.server.event.EventHandler;
 import net.kingingo.server.event.EventListener;
 import net.kingingo.server.event.EventManager;
+import net.kingingo.server.event.events.PacketReceiveEvent;
 import net.kingingo.server.event.events.StateChangeEvent;
 import net.kingingo.server.packets.Packet;
+import net.kingingo.server.packets.client.games.GameEndPacket;
+import net.kingingo.server.packets.client.games.GameStartAckPacket;
+import net.kingingo.server.packets.client.higherlower.HigherLowerSearchChoosePacket;
 import net.kingingo.server.packets.server.games.GameStartPacket;
+import net.kingingo.server.packets.server.higherlower.HigherLowerAnsweredPacket;
+import net.kingingo.server.packets.server.higherlower.HigherLowerSearchPacket;
 import net.kingingo.server.stage.Stage;
 import net.kingingo.server.user.State;
 import net.kingingo.server.user.User;
@@ -23,6 +29,8 @@ public abstract class Game implements EventListener{
 	@Getter
 	private boolean active = false;
 	private Callback<User[]> endCallback;
+	protected int user1_score = 0;
+	protected int user2_score = 0;
 	
 	public Game(Callback<User[]> endCallback) {
 		EventManager.register(this);
@@ -43,6 +51,7 @@ public abstract class Game implements EventListener{
 	}
 	
 	public void start(User u1, User u2) {
+		reset();
 		this.active=true;
 		this.user1=u1;
 		this.user2=u2;
@@ -50,16 +59,41 @@ public abstract class Game implements EventListener{
 		GameStartPacket packet = new GameStartPacket(getName().toLowerCase());
 		Stage.broadcast(packet);
 	}
+
+	public void reset() {
+		this.user1_score=0;
+		this.user2_score=0;
+	}
 	
-	public abstract void end();
+	public void end() {
+		User win = null;
+		User lose = null;
+		
+		if(this.user1_score > this.user2_score) {
+			win = this.getUser1();
+			lose = this.getUser2();
+		}else if(this.user1_score < this.user2_score){
+			win = this.getUser2();
+			lose = this.getUser1();
+		}else{
+			win = null;
+			lose = null;
+		}
+		print("END -> win:"+win+" lose:"+lose);
+		
+		end(win,lose);
+	}
 	
 	public void end(User win, User lose) {
 		this.active=false;
-		print("END -> SET USER1_DONE "+user1_done+" USER2_DONE "+user2_done);
 		this.user1_done=false;
 		this.user2_done=false;
-		print("END -> SET1 USER1_DONE "+user1_done+" USER2_DONE "+user2_done);
 		this.endCallback.run((win==null&&lose==null ? null : new User[] {win,lose}));
+		reset();
+	}
+
+	public User getOther(User u) {
+		return u.equalsUUID(this.getUser1()) ? this.getUser2() : this.getUser1();
 	}
 	
 	@EventHandler

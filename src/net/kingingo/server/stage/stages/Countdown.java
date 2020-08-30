@@ -1,6 +1,5 @@
 package net.kingingo.server.stage.stages;
 
-import lombok.Setter;
 import net.kingingo.server.Main;
 import net.kingingo.server.event.EventHandler;
 import net.kingingo.server.event.events.PacketReceiveEvent;
@@ -8,7 +7,6 @@ import net.kingingo.server.event.events.PacketSendEvent;
 import net.kingingo.server.packets.client.CountdownPacket;
 import net.kingingo.server.packets.server.CountdownAckPacket;
 import net.kingingo.server.stage.Stage;
-import net.kingingo.server.user.State;
 import net.kingingo.server.user.User;
 import net.kingingo.server.utils.TimeSpan;
 import net.kingingo.server.utils.Utils;
@@ -16,11 +14,20 @@ import net.kingingo.server.utils.Utils;
 public class Countdown extends Stage{
 	
 	private long start = 0;
-	@Setter
-	private long time = 30 * 60 * 1000;
 	
 	public Countdown() {
 		super(TimeSpan.MINUTE*30);
+	}
+	
+	public void setTime(long time) {
+		super.setTime(time);
+		this.start = System.currentTimeMillis();
+	}
+	
+	public void setCountdown(String text) {
+		this.previousText=text;
+		CountdownAckPacket packet = new CountdownAckPacket(getEnd(),text);
+		User.broadcast(packet);
 	}
 	
 	/**
@@ -59,7 +66,7 @@ public class Countdown extends Stage{
 	}
 	
 	public long inMinutes() {
-		return this.time / (60*1000);
+		return this.timeout / (60*1000);
 	}
 	
 	public void start() {
@@ -68,12 +75,11 @@ public class Countdown extends Stage{
 		this.start = System.currentTimeMillis();
 		printf("Countdown start "+inMinutes()+" min");
 		
-		CountdownAckPacket packet = new CountdownAckPacket(getEnd());
-		User.broadcast(packet);
+		setCountdown("next game in");
 	}
 	
 	public long getEnd() {
-		return this.start+this.time;
+		return this.start+this.timeout;
 	}
 	
 	public String toString() {
