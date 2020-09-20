@@ -27,6 +27,7 @@ import net.kingingo.server.utils.Utils;
 @Getter
 @Setter
 public class Search {
+	
 	public String request;
 	public String imagePath = "";
 	public int amount;

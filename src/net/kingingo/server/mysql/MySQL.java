@@ -6,7 +6,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-import net.kingingo.server.Main;
 import net.kingingo.server.utils.Callback;
 import net.kingingo.server.utils.TimeSpan;
 

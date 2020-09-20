@@ -38,9 +38,9 @@ public class ReadyStage extends Stage{
 			User u1 = PlayerChoose.getUser1();
 			User u2 = PlayerChoose.getUser2();
 			
-			if(ev.getUser().equalsUUID(u1)) {
+			if(ev.getUser().equals(u1)) {
 				this.u1_ready = true;
-			} else if(ev.getUser().equalsUUID(u2)) {
+			} else if(ev.getUser().equals(u2)) {
 				this.u2_ready = true;
 			} else {
 				Main.error("ReadyStage: Das Packet PlayerReady wurde von den User:");

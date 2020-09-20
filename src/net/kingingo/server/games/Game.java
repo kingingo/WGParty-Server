@@ -5,15 +5,9 @@ import net.kingingo.server.Main;
 import net.kingingo.server.event.EventHandler;
 import net.kingingo.server.event.EventListener;
 import net.kingingo.server.event.EventManager;
-import net.kingingo.server.event.events.PacketReceiveEvent;
 import net.kingingo.server.event.events.StateChangeEvent;
 import net.kingingo.server.packets.Packet;
-import net.kingingo.server.packets.client.games.GameEndPacket;
-import net.kingingo.server.packets.client.games.GameStartAckPacket;
-import net.kingingo.server.packets.client.higherlower.HigherLowerSearchChoosePacket;
 import net.kingingo.server.packets.server.games.GameStartPacket;
-import net.kingingo.server.packets.server.higherlower.HigherLowerAnsweredPacket;
-import net.kingingo.server.packets.server.higherlower.HigherLowerSearchPacket;
 import net.kingingo.server.stage.Stage;
 import net.kingingo.server.user.State;
 import net.kingingo.server.user.User;
@@ -93,16 +87,16 @@ public abstract class Game implements EventListener{
 	}
 
 	public User getOther(User u) {
-		return u.equalsUUID(this.getUser1()) ? this.getUser2() : this.getUser1();
+		return u.equals(this.getUser1()) ? this.getUser2() : this.getUser1();
 	}
 	
 	@EventHandler
 	public void change(StateChangeEvent ev) {
 		if(!isActive())return;
 		if(ev.getNewState() == State.OFFLINE) {
-			if(ev.getUser().equalsUUID(getUser1())) {
+			if(ev.getUser().equals(getUser1())) {
 				end(getUser2(),getUser1());
-			}else if( ev.getUser().equalsUUID(getUser2())) {
+			}else if( ev.getUser().equals(getUser2())) {
 				end(getUser1(),getUser2());
 			}
 		}

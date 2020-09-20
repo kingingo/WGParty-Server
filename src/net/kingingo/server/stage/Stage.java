@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import lombok.Getter;
-import lombok.Setter;
 import net.kingingo.server.Main;
 import net.kingingo.server.event.EventListener;
 import net.kingingo.server.event.EventManager;

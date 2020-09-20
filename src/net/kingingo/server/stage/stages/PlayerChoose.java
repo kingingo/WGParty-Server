@@ -2,13 +2,8 @@ package net.kingingo.server.stage.stages;
 
 import java.util.ArrayList;
 
-import net.kingingo.server.Main;
-import net.kingingo.server.event.EventHandler;
-import net.kingingo.server.event.events.PacketReceiveEvent;
-import net.kingingo.server.event.events.StateChangeEvent;
 import net.kingingo.server.packets.server.StartMatchPacket;
 import net.kingingo.server.stage.Stage;
-import net.kingingo.server.user.State;
 import net.kingingo.server.user.User;
 import net.kingingo.server.utils.TimeSpan;
 import net.kingingo.server.utils.Utils;
@@ -59,7 +54,7 @@ public class PlayerChoose extends Stage{
 	
 	private User pickUser() {
 		ArrayList<User> list = (ArrayList<User>) this.users.clone();
-		list.removeIf( u -> (u.equalsUUID(this.u1) || u.equalsUUID(this.u2)));
+		list.removeIf( u -> (u.equals(this.u1) || u.equals(this.u2)));
 		
 		if(list.isEmpty())new NullPointerException("List ist empty?!");
 		return list.get(Utils.randInt(0, list.size()-1));

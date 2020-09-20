@@ -9,8 +9,8 @@ import lombok.Getter;
 import lombok.Setter;
 import net.kingingo.server.Main;
 import net.kingingo.server.packets.Packet;
-import net.kingingo.server.user.UserStats;
 import net.kingingo.server.user.User;
+import net.kingingo.server.user.UserStats;
 @Setter
 public class StatsAckPacket extends Packet{
 

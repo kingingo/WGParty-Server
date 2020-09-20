@@ -2,7 +2,6 @@ package net.kingingo.server.stage.stages;
 
 import java.util.Random;
 
-import net.kingingo.server.Main;
 import net.kingingo.server.event.EventHandler;
 import net.kingingo.server.event.events.PacketReceiveEvent;
 import net.kingingo.server.packets.client.WheelSpinPacket;

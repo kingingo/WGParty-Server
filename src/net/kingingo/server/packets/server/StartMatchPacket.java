@@ -6,8 +6,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 
-import com.google.common.collect.Collections2;
-
 import net.kingingo.server.packets.Packet;
 import net.kingingo.server.user.User;
 

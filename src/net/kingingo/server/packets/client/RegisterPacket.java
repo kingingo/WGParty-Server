@@ -3,6 +3,7 @@ package net.kingingo.server.packets.client;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+
 import lombok.Getter;
 import net.kingingo.server.packets.Packet;
 

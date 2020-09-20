@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
@@ -16,7 +15,6 @@ import lombok.Getter;
 import lombok.Setter;
 import net.kingingo.server.Main;
 import net.kingingo.server.event.EventManager;
-import net.kingingo.server.event.events.SpectateChangeEvent;
 import net.kingingo.server.event.events.StateChangeEvent;
 import net.kingingo.server.mysql.MySQL;
 import net.kingingo.server.packets.Packet;
@@ -293,9 +291,14 @@ public class User {
 		return builder.toString();
 	}
 	
-	public boolean equalsUUID(User u) {
+	public boolean equalsUUID(UUID uuid) {
+		if(uuid==null)return false;
+		return uuid.equals(getUuid());
+	}
+	
+	public boolean equals(User u) {
 		if(u==null)return false;
-		return u.getUuid().toString().equalsIgnoreCase(getUuid().toString());
+		return equalsUUID(u.getUuid());
 	}
 	
 	public String toString() {

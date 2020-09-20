@@ -3,6 +3,7 @@ package net.kingingo.server.terminal.commands;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
+
 import net.kingingo.server.Main;
 import net.kingingo.server.mysql.MySQL;
 import net.kingingo.server.terminal.CommandExecutor;

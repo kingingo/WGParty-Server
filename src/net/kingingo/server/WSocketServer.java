@@ -19,7 +19,6 @@ import net.kingingo.server.event.events.ClientErrorEvent;
 import net.kingingo.server.event.events.PacketReceiveEvent;
 import net.kingingo.server.event.events.PacketSendEvent;
 import net.kingingo.server.packets.Packet;
-import net.kingingo.server.packets.server.IdsPacket;
 import net.kingingo.server.user.User;
 
 public class WSocketServer extends WebSocketServer{
