@@ -63,12 +63,6 @@
 		</repository>
 	</repositories>
 	<dependencies>
-		<!-- https://mvnrepository.com/artifact/org.json/json -->
-		<dependency>
-			<groupId>org.json</groupId>
-			<artifactId>json</artifactId>
-			<version>20190722</version>
-		</dependency>
 		<!-- https://mvnrepository.com/artifact/org.openqa.selenium/selenium -->
 		<dependency>
 			<groupId>org.seleniumhq.selenium</groupId>
@@ -86,11 +80,11 @@
 			<version>3.141.59</version>
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/org.jsoup/jsoup -->
-		<dependency>
-			<groupId>org.jsoup</groupId>
-			<artifactId>jsoup</artifactId>
-			<version>1.13.1</version>
-		</dependency>
+<!-- 		<dependency> -->
+<!-- 			<groupId>org.jsoup</groupId> -->
+<!-- 			<artifactId>jsoup</artifactId> -->
+<!-- 			<version>1.13.1</version> -->
+<!-- 		</dependency> -->
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-simple</artifactId>
@@ -128,6 +122,12 @@
 			<groupId>org.reflections</groupId>
 			<artifactId>reflections</artifactId>
 			<version>0.9.10</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.json/json -->
+		<dependency>
+			<groupId>org.json</groupId>
+			<artifactId>json</artifactId>
+			<version>20190722</version>
 		</dependency>
 	</dependencies>
 </project>
