@@ -44,6 +44,10 @@ public abstract class Game implements EventListener{
 		this.user2.write(packet);
 	}
 	
+	public void resend(User user) {
+		user.write(new GameStartPacket(getName().toLowerCase()));
+	}
+	
 	public void start(User u1, User u2) {
 		reset();
 		this.active=true;

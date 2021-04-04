@@ -10,6 +10,7 @@ import net.kingingo.server.packets.Packet;
 import net.kingingo.server.user.User;
 
 public class StartMatchPacket extends Packet{
+	public int roulette_duration = 0;
 	public boolean roulette = true;
 	public User user1;
 	public User user2;
@@ -21,11 +22,16 @@ public class StartMatchPacket extends Packet{
 		this(u1,u2,loaded,true);
 	}
 	
-	public StartMatchPacket(User u1, User u2, ArrayList<User> loaded,boolean roulette) {
+	public StartMatchPacket(User u1, User u2, ArrayList<User> loaded,boolean roulette, int roulette_duration) {
 		this.user1=u1;
 		this.user2=u2;
 		this.loaded=loaded;
 		this.roulette = roulette;
+		this.roulette_duration=roulette_duration;
+	}
+	
+	public StartMatchPacket(User u1, User u2, ArrayList<User> loaded,boolean roulette) {
+		this(u1,u2,loaded,roulette,4);
 	}
 	
 	@Override
@@ -37,6 +43,7 @@ public class StartMatchPacket extends Packet{
 		if(!this.loaded.contains(user2))this.loaded.add(user2);
 		Collections.shuffle(this.loaded);
 		
+		out.writeInt(this.roulette_duration);
 		out.writeBoolean(this.roulette);
 		
 		out.writeInt(getIndex(user1));

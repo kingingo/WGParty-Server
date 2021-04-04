@@ -57,6 +57,8 @@ public class Utils {
  
         // scales the input image to the output image
         Graphics2D g2d = outputImage.createGraphics();
+        /** MUSS NICHT BEI JEDEN BILD ROTIERT WERDEN VLT GROEßEM ANHAENGIG!**/
+//        g2d.rotate(Math.toRadians(90), scaledWidth/2, scaledHeight/2);
         g2d.drawImage(inputImage, 0, 0, scaledWidth, scaledHeight, null);
         g2d.dispose();
  

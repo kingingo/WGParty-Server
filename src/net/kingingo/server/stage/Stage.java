@@ -2,12 +2,16 @@ package net.kingingo.server.stage;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import lombok.Getter;
 import net.kingingo.server.Main;
+import net.kingingo.server.event.EventHandler;
 import net.kingingo.server.event.EventListener;
 import net.kingingo.server.event.EventManager;
+import net.kingingo.server.event.events.PacketReceiveEvent;
 import net.kingingo.server.packets.Packet;
+import net.kingingo.server.packets.client.CountdownPacket;
 import net.kingingo.server.packets.server.CountdownAckPacket;
 import net.kingingo.server.stage.stages.Countdown;
 import net.kingingo.server.stage.stages.GameStage;
@@ -22,16 +26,29 @@ public abstract class Stage implements EventListener, Runnable{
 	private static ArrayList<Class<? extends Stage>> stages_order = new ArrayList<>();
 	private static HashMap<Class<? extends Stage>, Stage> stages = new HashMap<Class<? extends Stage>,Stage>();
 	
+	public static ArrayList<Stage> getStages(){
+		ArrayList<Stage> stages = new ArrayList<>();
+		for(Class<? extends Stage> c : Stage.stages_order) {
+			stages.add(Stage.stages.get(c));
+		}
+		return stages;
+	}
+	
 	public void put(Class<? extends Stage> clazz, Stage stage) {
 		stages_order.add(clazz);
 		stages.put(clazz, stage);
 	}
 	
 	public static void init() {
+		//0
 		new Countdown();
+		//1
 		new PlayerChoose();
+		//2
 		new ReadyStage();
+		//3
 		new GameStage();
+		//4
 		new WheelStage();
 	}
 	
@@ -62,17 +79,20 @@ public abstract class Stage implements EventListener, Runnable{
 	
 	public static <T extends Stage> T jump(Class<T> clazz) {
 		T stage = (T) stages.get(clazz);
+		Main.printf("JUMP-STAGE", currentStage()+" jump to "+stage);
 		if(currentStage>=0) {
-			currentStage().deactive();
+			currentStage().stop();
 		}
 		int index = 0;
-		for(Class<? extends Stage> c : stages.keySet()) {
+		for(Class<? extends Stage> c : stages_order) {
+			Main.printf("JUMP", c.getSimpleName()+" "+index);
 			if(c == clazz)break;
 			index++;
 		}
 		
 		currentStage=index;
 		stage.start();
+		Main.printf("JUMP-STAGE", "Start "+stage+" stage:"+index);
 		
 		return stage;
 	}
@@ -87,7 +107,7 @@ public abstract class Stage implements EventListener, Runnable{
 		}
 		
 		if(currentStage>=0) {
-			currentStage().deactive();
+			currentStage().stop();
 		} 
 		
 		if(currentStage == (stages.size()-1)) {
@@ -108,8 +128,12 @@ public abstract class Stage implements EventListener, Runnable{
 		return s;
 	}
 	
+	public static void broadcast(Packet packet, List<User> blackList) {
+		User.broadcast(packet, (currentStage == 0 ? State.DASHBOARD_PAGE : State.INGAME),blackList);
+	}
+	
 	public static void broadcast(Packet packet) {
-		User.broadcast(packet, State.INGAME);
+		User.broadcast(packet, (currentStage == 0 ? State.DASHBOARD_PAGE : State.INGAME));
 	}
 	
 	public static User getUser2() {
@@ -125,7 +149,20 @@ public abstract class Stage implements EventListener, Runnable{
 	private Thread thread;
 	@Getter
 	protected long timeout;
+	protected long start_time;
+	protected long end_time;
 	protected String previousText;
+	
+	@EventHandler
+	public void rec(PacketReceiveEvent ev) {
+		if(!isActive())return;
+		if(ev.getPacket() instanceof CountdownPacket) {
+			ev.getUser().setTimeDifference(System.currentTimeMillis() - ev.getPacket(CountdownPacket.class).getTime());
+			printf("Send Msg:"+this.previousText+" Time:"+(this.end_time-System.currentTimeMillis()));
+			CountdownAckPacket ack = new CountdownAckPacket(this.end_time,this.previousText);
+			ev.getUser().write(ack);
+		}
+	}
 	
 	public Stage(long timeout) {
 		this.timeout=timeout;
@@ -133,9 +170,14 @@ public abstract class Stage implements EventListener, Runnable{
 		put(this.getClass(),this);
 	}
 	
+	public void setCountdown(User user) {
+		CountdownAckPacket ack = new CountdownAckPacket(this.end_time,this.previousText);
+		user.write(ack);
+	}
+	
 	public void setCountdown(String text) {
 		this.previousText=text;
-		CountdownAckPacket packet = new CountdownAckPacket(System.currentTimeMillis()+this.timeout,text);
+		CountdownAckPacket packet = new CountdownAckPacket(this.end_time,text);
 		broadcast(packet);
 	}
 	
@@ -149,29 +191,46 @@ public abstract class Stage implements EventListener, Runnable{
 		this.thread.start();
 		setCountdown(previousText);
 	}
+
+	
+	public static final int NEXT_STAGE = 0;
+	public static final int BREAK = 1;
+	public static final int CONTINUE = 2;
 	
 	public void run() {
-		while(this.active) {
+		this.start_time = System.currentTimeMillis();
+		loop: while(this.active) {
 			try {
+				this.end_time = System.currentTimeMillis() + this.timeout;
 				Thread.sleep(this.timeout);
 				if(this.active) {
-					boolean b = this.running();
-					if(b) {
+					int b = this.running();
+					printf("time over do running "+(b==NEXT_STAGE ? "NEXT_STAGE" : (b==1?"BREAK":"CONTINUE")));
+					switch(b){
+					case NEXT_STAGE:
 						Stage.next();
-						break;
+						break loop;
+					case BREAK:
+						break loop;
 					}
 				}
 			} catch (InterruptedException e) {}
 		}
+		this.active=false;
+		printf("stop!");
 	}
 	
-	public abstract boolean running();
+	public abstract int running();
 	
-	public void deactive() {
+	public void stop() {
 		this.active=false;
+		this.thread.interrupt();
 	}
 	
 	public void start() {
+		printf("start...");
+		this.start_time = System.currentTimeMillis();
+		this.end_time = System.currentTimeMillis() + this.timeout;
 		this.active=true;
 		this.thread = new Thread(this);
 		this.thread.start();

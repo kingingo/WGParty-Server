@@ -5,10 +5,15 @@ import java.util.ArrayList;
 import lombok.Getter;
 import net.kingingo.server.event.EventHandler;
 import net.kingingo.server.event.events.PacketReceiveEvent;
+import net.kingingo.server.event.events.UserLoggedInEvent;
 import net.kingingo.server.games.Game;
 import net.kingingo.server.games.HigherLower.HigherLower;
+import net.kingingo.server.games.Ladder.Ladder;
 import net.kingingo.server.games.PingPong.PingPong;
+import net.kingingo.server.packets.client.games.GameStartAckPacket;
+import net.kingingo.server.packets.server.ToggleStagePacket;
 import net.kingingo.server.stage.Stage;
+import net.kingingo.server.user.State;
 import net.kingingo.server.user.User;
 import net.kingingo.server.utils.Callback;
 import net.kingingo.server.utils.TimeSpan;
@@ -16,12 +21,32 @@ import net.kingingo.server.utils.Utils;
 
 public class GameStage extends Stage{
 	
+	
 	private ArrayList<Game> games = new ArrayList<>();
 	public Game current;
 	@Getter
 	public User win;
 	@Getter
 	public User lose;
+	
+	@EventHandler
+	public void login(UserLoggedInEvent ev) {
+		if(!isActive())return;
+
+		ev.getUser().write(new ToggleStagePacket("ingame"));
+		ev.getUser().write(new ToggleStagePacket("stage2"));
+		this.current.resend(ev.getUser());
+		setCountdown(ev.getUser());
+	}
+	
+//	@EventHandler
+//	public void rec(PacketReceiveEvent ev) {
+//		if(!isActive())return;
+//		
+//		if(ev.getPacket() instanceof GameStartAckPacket) {
+//			
+//		}
+//	}
 	
 	public GameStage() {
 		super(TimeSpan.MINUTE*5);
@@ -49,22 +74,17 @@ public class GameStage extends Stage{
 		
 		this.games.add(new HigherLower(end));
 		this.games.add(new PingPong(end));
+		this.games.add(new Ladder(end));
 	}
 	
 	public Game randomGame() {
 		return this.games.get(Utils.randInt(0, this.games.size()-1));
 	}
 	
-	@EventHandler
-	public void rec(PacketReceiveEvent ev) {
-		if(!isActive())return;
-		
-	}
-	
-	public boolean running() {
+	public int running() {
 		printf("Game Timeout reached");
 		this.current.end();
-		return false;
+		return Stage.BREAK;
 	}
 	
 	@Override
@@ -73,7 +93,7 @@ public class GameStage extends Stage{
 		this.win = null;
 		this.lose = null;
 //		this.current = randomGame();
-		this.current = this.games.get(1);
+		this.current = this.games.get(2);
 		this.current.start(getUser1(),getUser2());
 		
 		setCountdown("game ends in");

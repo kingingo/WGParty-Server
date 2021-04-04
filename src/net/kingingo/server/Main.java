@@ -11,6 +11,7 @@ import net.kingingo.server.ping.PingThread;
 import net.kingingo.server.stage.Stage;
 import net.kingingo.server.terminal.Terminal;
 import net.kingingo.server.user.User;
+import net.kingingo.server.user.UserStats;
 import net.kingingo.server.utils.TimeSpan;
 
 public class Main {
@@ -34,6 +35,7 @@ public class Main {
 		printf("Loading MySQL...");
 		if(!MySQL.connect("root", "","localhost","test",3306))return false;
 		MySQL.Update("CREATE TABLE IF NOT EXISTS `users` (`uuid` VARCHAR(36),`name` VARCHAR(30));");
+		UserStats.createTable();
 		return true;
 	}
 	

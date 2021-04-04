@@ -1,5 +1,7 @@
 package net.kingingo.server.terminal.commands;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 
 import com.google.common.collect.Lists;
@@ -25,20 +27,50 @@ public class TestCommand implements CommandExecutor{
 
 	@Override
 	public void onCommand(String[] args) {
-		
+		if(args.length == 0) {
+			Main.printf("test ...");
+			return;
+		}
 		switch(args[0].toUpperCase()) {
+		case "RESIZE":
+			try {
+				String root = "C:"
+							+File.separator+"Users"
+							+File.separator+"obena"
+							+File.separator+"git"
+							+File.separator+"WGParty"
+							+File.separator+"src"
+							+File.separator+"images"
+							+File.separator+"profiles";
+				
+				String newPath = root + File.separator + "resize" + File.separator + "ae90b164-cfbf-475c-b8da-4e4cd641a5e2.jpeg";
+				String OriginalPath = root + File.separator + "original" + File.separator + "ae90b164-cfbf-475c-b8da-4e4cd641a5e2.jpeg";
+			
+				Main.printf("Resize "+ OriginalPath + " to "+ newPath);
+				Utils.resize(new File(OriginalPath), newPath,256,256);
+				Main.printf("Resize DONE!!");
+				
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			
+			
+			break;
 		case "SETTIME":
 			long time = Integer.valueOf(args[1]) * TimeSpan.MINUTE;
 			
 			Stage.currentStage().setTime(time);
 			Main.printf(Stage.currentStage().getClass().getSimpleName()+" set time to "+time);
 			break;
+		case "NEXT":
+			Stage.next();
+			break;
 		case "START":
 			PlayerChoose.start_u1 = (args.length>=2 ? User.getUser(args[1]) : null);
 			PlayerChoose.start_u2 = (args.length>=3 ? User.getUser(args[2]) : null);
 
 			Stage.next();
-			Main.printf("Stage NEXT!");
+			Main.printf("Stage PlayerChoose!");
 			break;
 		case "ADD":
 			User user1 = User.getUser(args[1]);
@@ -96,8 +128,18 @@ public class TestCommand implements CommandExecutor{
 			}else Main.printf("This stage is not activated");
 			break;
 		case "STAGE":
-			Stage.next();
-			Main.printf("Stage NEXT!");
+			if(args.length == 1) {
+				Main.printf("Current Stage: "+Stage.currentStage()+" "+Stage.getUser1()+"/"+Stage.getUser2());
+				for(Stage st : Stage.getStages())
+					Main.printf("    "+st);
+			} else {
+				switch(args[1].toUpperCase()) {
+				case "NEXT":
+					Stage.next();
+					Main.printf("Stage NEXT!");
+					break;
+				}
+			}
 			break;
 		case "USERS":
 			for(User u : User.getUsers().values()) {

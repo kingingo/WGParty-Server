@@ -2,8 +2,13 @@ package net.kingingo.server.stage.stages;
 
 import java.util.ArrayList;
 
+import net.kingingo.server.event.EventHandler;
+import net.kingingo.server.event.events.ClientConnectEvent;
+import net.kingingo.server.event.events.PacketReceiveEvent;
+import net.kingingo.server.event.events.UserLoggedInEvent;
 import net.kingingo.server.packets.server.StartMatchPacket;
 import net.kingingo.server.stage.Stage;
+import net.kingingo.server.user.State;
 import net.kingingo.server.user.User;
 import net.kingingo.server.utils.TimeSpan;
 import net.kingingo.server.utils.Utils;
@@ -43,13 +48,18 @@ public class PlayerChoose extends Stage{
 	public User u2;
 	public ArrayList<User> users;
 	
+	@EventHandler
+	public void connect(UserLoggedInEvent ev) {
+		if(!isActive())return;
+		ev.getUser().write(new StartMatchPacket(this.u1,this.u2,users,(this.end_time - System.currentTimeMillis()) >= 5, 3));
+	}
+	
 	public PlayerChoose() {
 		super(TimeSpan.SECOND * 20);
 	}
 	
-	public boolean running() {
-		printf("Next Stage Player has been choosen!");
-		return true;
+	public int running() {
+		return Stage.NEXT_STAGE;
 	}
 	
 	private User pickUser() {

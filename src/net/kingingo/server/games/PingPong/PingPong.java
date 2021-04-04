@@ -6,6 +6,7 @@ import net.kingingo.server.Main;
 import net.kingingo.server.event.EventHandler;
 import net.kingingo.server.event.events.PacketReceiveEvent;
 import net.kingingo.server.games.Game;
+import net.kingingo.server.packets.client.games.GameStartAckPacket;
 import net.kingingo.server.packets.client.pingpong.PingPongGoalPacket;
 import net.kingingo.server.packets.client.pingpong.PingPongUserPacket;
 import net.kingingo.server.user.State;
@@ -18,31 +19,42 @@ public class PingPong extends Game{
 		super(endCallback);
 	}
 	
+	public void resend(User user) {
+		super.resend(user);
+	}
+	
 	@EventHandler
 	public void rec(PacketReceiveEvent ev) {
-		if(isActive() && (ev.getUser().equals(getUser1()) || ev.getUser().equals(getUser2()))) {
-			if(ev.getPacket() instanceof PingPongUserPacket) {
-				User.broadcast(ev.getPacket(), State.INGAME, Arrays.asList(ev.getUser()));
-			}else if(ev.getPacket() instanceof PingPongGoalPacket) {
-				PingPongGoalPacket packet = ev.getPacket(PingPongGoalPacket.class);
+		if(isActive()) {
+			if(ev.getUser().equals(getUser1()) || ev.getUser().equals(getUser2())) {
+				if(ev.getPacket() instanceof PingPongUserPacket) {
+					User.broadcast(ev.getPacket(), State.INGAME, Arrays.asList(ev.getUser()));
+				}else if(ev.getPacket() instanceof PingPongGoalPacket) {
+					PingPongGoalPacket packet = ev.getPacket(PingPongGoalPacket.class);
 
-				int old_score = 0;
-				if(ev.getUser().equalsUUID(packet.getUuid()) && getUser1().getUuid().equals(packet.getUuid())) {
-					old_score = this.user1_score;
-					this.user1_score = packet.getScore();
+					int old_score = 0;
+					if(ev.getUser().equalsUUID(packet.getUuid()) && getUser1().getUuid().equals(packet.getUuid())) {
+						old_score = this.user1_score;
+						this.user1_score = packet.getScore();
 
-					Main.debug("Score update from "+ev.getUser().getName()+" for "+User.getUser(packet.getUuid()).getName()+" old score "+old_score+" => new score "+packet.getScore());
-					if(this.user1_score >= 8) {
-						end();
-					}
-				}else if(ev.getUser().equalsUUID(packet.getUuid()) && getUser2().getUuid().equals(packet.getUuid())) {
-					old_score = this.user2_score;
-					this.user2_score = packet.getScore();
-					Main.debug("Score update from "+ev.getUser().getName()+" for "+User.getUser(packet.getUuid()).getName()+" old score "+old_score+" => new score "+packet.getScore());
-					if(this.user2_score >= 8) {
-						end();
+						Main.debug("Score update from "+ev.getUser().getName()+" for "+User.getUser(packet.getUuid()).getName()+" old score "+old_score+" => new score "+packet.getScore());
+						if(this.user1_score >= 8) {
+							end();
+						}
+					}else if(ev.getUser().equalsUUID(packet.getUuid()) && getUser2().getUuid().equals(packet.getUuid())) {
+						old_score = this.user2_score;
+						this.user2_score = packet.getScore();
+						Main.debug("Score update from "+ev.getUser().getName()+" for "+User.getUser(packet.getUuid()).getName()+" old score "+old_score+" => new score "+packet.getScore());
+						if(this.user2_score >= 8) {
+							end();
+						}
 					}
 				}
+			}
+			
+			if(ev.getPacket() instanceof GameStartAckPacket) {
+				ev.getUser().write(new PingPongGoalPacket(this.getUser1().getUuid(), this.user1_score));
+				ev.getUser().write(new PingPongGoalPacket(this.getUser2().getUuid(), this.user2_score));
 			}
 		}
 	}

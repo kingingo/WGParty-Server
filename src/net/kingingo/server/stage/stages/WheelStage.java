@@ -4,6 +4,7 @@ import java.util.Random;
 
 import net.kingingo.server.event.EventHandler;
 import net.kingingo.server.event.events.PacketReceiveEvent;
+import net.kingingo.server.event.events.UserLoggedInEvent;
 import net.kingingo.server.packets.client.WheelSpinPacket;
 import net.kingingo.server.packets.server.MatchPacket;
 import net.kingingo.server.stage.Stage;
@@ -15,27 +16,44 @@ import net.kingingo.server.wheel.Wheel;
 public class WheelStage extends Stage{
 	
 	private long rolled = 0;
+	private WheelSpinPacket spin_packet;
 	
 	public WheelStage() {
 		super(TimeSpan.SECOND*20);
 	}
 	
 	@EventHandler
+	public void login(UserLoggedInEvent ev) {
+		if(!isActive())return;
+
+		GameStage stage = Stage.get(GameStage.class);
+		MatchPacket packet = new MatchPacket(stage.win, stage.lose, Wheel.getInstance().getAlk());
+		ev.getUser().write(packet);
+		
+		if(this.rolled != 0) {
+			ev.getUser().write(spin_packet);
+		}
+	}
+	
+	@EventHandler
 	public void rec(PacketReceiveEvent ev) {
 		if(!isActive())return;
 		if(ev.getPacket() instanceof WheelSpinPacket) {
-			this.rolled=System.currentTimeMillis();
-			
-			State state;
-			for(User user : User.getUsers().values()) {
-				state = user.getState();
-				if(user.getUuid() != ev.getUser().getUuid() && state == State.INGAME)
-					user.write(ev.getPacket());
-			}
+			if(ev.getUser().equals(Stage.get(GameStage.class).lose)) {
+				this.spin_packet = ev.getPacket(WheelSpinPacket.class);
+				this.rolled=System.currentTimeMillis();
+				
+				State state;
+				for(User user : User.getUsers().values()) {
+					state = user.getState();
+					if(user.getUuid() != ev.getUser().getUuid() && state == State.INGAME)
+						user.write(ev.getPacket());
+				}
+			}else printf(ev.getUser() + " send WheelSpinPacket but "+Stage.get(GameStage.class).win+" is loser!");
 		}
 	}
 
-	public boolean running() {
+	public int running() {
 		if(this.rolled==0) {
 			this.rolled=System.currentTimeMillis();
 			broadcast(new WheelSpinPacket(new Random().nextFloat()));
@@ -54,7 +72,7 @@ public class WheelStage extends Stage{
 			}
 		}
 		
-		return true;
+		return Stage.NEXT_STAGE;
 	}
 	
 	@Override

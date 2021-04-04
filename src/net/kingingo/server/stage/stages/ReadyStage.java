@@ -3,10 +3,13 @@ package net.kingingo.server.stage.stages;
 import net.kingingo.server.Main;
 import net.kingingo.server.event.EventHandler;
 import net.kingingo.server.event.events.PacketReceiveEvent;
+import net.kingingo.server.event.events.UserLoggedInEvent;
 import net.kingingo.server.packets.client.games.PlayerReadyPacket;
 import net.kingingo.server.packets.server.ReadyPacket;
+import net.kingingo.server.packets.server.ToggleStagePacket;
 import net.kingingo.server.packets.server.games.PlayerReadyAckPacket;
 import net.kingingo.server.stage.Stage;
+import net.kingingo.server.user.State;
 import net.kingingo.server.user.User;
 import net.kingingo.server.utils.TimeSpan;
 
@@ -25,9 +28,24 @@ public class ReadyStage extends Stage{
 	}
 
 	@Override
-	public boolean running() {
+	public int running() {
 		PlayerChoose.restart(u1_ready, u2_ready);
-		return false;
+		return Stage.BREAK;
+	}
+	
+	@EventHandler
+	public void login(UserLoggedInEvent ev) {
+		if(!isActive())return;
+
+		ev.getUser().write(new ToggleStagePacket("ingame"));
+		ev.getUser().write(new ToggleStagePacket("stage1"));
+		ev.getUser().write(new ReadyPacket());
+		setCountdown(ev.getUser());
+		
+		if(this.u1_ready)
+			ev.getUser().write(new PlayerReadyAckPacket(getUser1(),true));
+		if(this.u2_ready)
+			ev.getUser().write(new PlayerReadyAckPacket(getUser2(),true));
 	}
 	
 	@EventHandler
@@ -48,6 +66,7 @@ public class ReadyStage extends Stage{
 				Main.error("gesendet, aber ist ein Spectator");
 				Main.error("User1: "+(u1 == null ? "NULL?!" : u1.getDetails()));
 				Main.error("User2: "+(u2 == null ? "NULL?!" : u2.getDetails()));
+				return;
 			}
 			
 			//BEIDE SIND BEREIT...

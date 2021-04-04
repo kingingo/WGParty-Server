@@ -30,6 +30,10 @@ import net.kingingo.server.utils.Callback;
 public class UserStats {
 	public static final String MYSQL_TABLE = "user_stats";
 	
+	public static void createTable() {
+		MySQL.Update("CREATE TABLE IF NOT EXISTS `"+MYSQL_TABLE+"` (`uuid` VARCHAR(50) DEFAULT NULL,`skey` VARCHAR(50) DEFAULT NULL,`stats` blob DEFAULT NULL);");
+	}
+	
 	public static void broadcastUpdate() {
 		StatsAckPacket packet = new StatsAckPacket(User.getAllStats());
 		for(User user : User.getAllStats().keySet()) {

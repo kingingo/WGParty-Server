@@ -16,6 +16,11 @@ public class PingPongGoalPacket extends Packet{
 	
 	public PingPongGoalPacket() {}
 	
+	public PingPongGoalPacket(UUID uuid, int score) {
+		this.uuid = uuid;
+		this.score = score;
+	}
+	
 	@Override
 	public void parseFromInput(DataInputStream in) throws IOException {
 		this.uuid = UUID.fromString(in.readUTF());

@@ -16,6 +16,7 @@ import lombok.Setter;
 import net.kingingo.server.Main;
 import net.kingingo.server.event.EventManager;
 import net.kingingo.server.event.events.StateChangeEvent;
+import net.kingingo.server.event.events.UserLoggedInEvent;
 import net.kingingo.server.mysql.MySQL;
 import net.kingingo.server.packets.Packet;
 import net.kingingo.server.packets.client.HandshakePacket;
@@ -180,8 +181,9 @@ public class User {
 		try {
 			Utils.createDirectorie(getPath());
 			
-			Utils.toFile(getOriginalPath(packet.format), packet.getImage());
-			Utils.resize(new File(getOriginalPath(packet.format)), getPath(),256,256);
+			String path = getOriginalPath(packet.format);
+			Utils.toFile(path, packet.getImage());
+			Utils.resize(new File(path), getPath(),256,256);
 			
 			Main.printf("UUID:"+uuid.toString()+"("+uuid.toString().length()+") "+name+" format:"+packet.getFormat());
 			MySQL.Update("INSERT INTO users (uuid,name) VALUES ('" + uuid.toString() + "','" + name + "');");
@@ -236,6 +238,7 @@ public class User {
 			found.setSocket(this.socket);
 			found.write(new HandshakeAckPacket(found.getName(), true));
 			found.setState(packet.getState());
+			EventManager.callEvent(new UserLoggedInEvent(found));
 			return found;
 		}
 		this.uuid = uuid;
@@ -263,6 +266,7 @@ public class User {
 					}
 					Main.debug("User: "+user.toString()+" Loaded:"+count+" -> "+(count==1 ? "accepted" : "not accepted"));
 					user.setState(packet.getState());
+					EventManager.callEvent(new UserLoggedInEvent(user));
 				} catch (SQLException e) {
 					e.printStackTrace();
 				} 

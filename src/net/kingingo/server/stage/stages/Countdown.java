@@ -6,6 +6,7 @@ import net.kingingo.server.event.events.PacketReceiveEvent;
 import net.kingingo.server.event.events.PacketSendEvent;
 import net.kingingo.server.packets.client.CountdownPacket;
 import net.kingingo.server.packets.server.CountdownAckPacket;
+import net.kingingo.server.packets.server.ToggleStagePacket;
 import net.kingingo.server.stage.Stage;
 import net.kingingo.server.user.User;
 import net.kingingo.server.utils.TimeSpan;
@@ -24,12 +25,6 @@ public class Countdown extends Stage{
 		this.start = System.currentTimeMillis();
 	}
 	
-	public void setCountdown(String text) {
-		this.previousText=text;
-		CountdownAckPacket packet = new CountdownAckPacket(getEnd(),text);
-		User.broadcast(packet);
-	}
-	
 	/**
 	 * Set Time Difference between User and Server!
 	 * @param ev
@@ -43,25 +38,14 @@ public class Countdown extends Stage{
 		}
 	}
 	
-	@EventHandler
-	public void rec(PacketReceiveEvent ev) {
-		if(!isActive())return;
-		if(ev.getPacket() instanceof CountdownPacket) {
-			ev.getUser().setTimeDifference(System.currentTimeMillis() - ev.getPacket(CountdownPacket.class).getTime());
-			
-			CountdownAckPacket ack = new CountdownAckPacket(getEnd());
-			ev.getUser().write(ack);
-		}
-	}
-	
-	public boolean running() {
+	public int running() {
 		printf("Countdown over...");
 		
 		if(User.getAllStats().size()>=4) {
-			return true;
+			return Stage.NEXT_STAGE;
 		}else {
 			Stage.currentStage().start();
-			return false;
+			return Stage.CONTINUE;
 		}
 	}
 	
@@ -76,6 +60,8 @@ public class Countdown extends Stage{
 		printf("Countdown start "+inMinutes()+" min");
 		
 		setCountdown("next game in");
+		User.broadcast(new ToggleStagePacket("table"),null);
+		User.broadcast(new ToggleStagePacket("dashboard"),null);
 	}
 	
 	public long getEnd() {

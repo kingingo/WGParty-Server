@@ -17,6 +17,6 @@ public class ReadyPacket extends Packet{
 	public void writeToOutput(DataOutputStream out) throws IOException {}
 
 	public String toString() {
-		return "";
+		return this.getPacketName();
 	}
 }
