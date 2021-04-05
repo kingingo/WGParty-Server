@@ -50,6 +50,6 @@ public class LadderClickPacket extends Packet{
 	}
 	
 	public String toString() {
-		return this.getPacketName()+" UUID:"+(this.uuid==null ? "null" : this.uuid);
+		return this.getPacketName()+" UUID:"+(this.uuid==null ? "null" : this.uuid)+" pos:"+pos+" start:"+start+" range:"+range+" up:"+up+" tries:"+tries;
 	}
 }

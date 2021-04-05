@@ -7,6 +7,7 @@ import net.kingingo.server.event.EventHandler;
 import net.kingingo.server.event.events.PacketReceiveEvent;
 import net.kingingo.server.event.events.UserLoggedInEvent;
 import net.kingingo.server.games.Game;
+import net.kingingo.server.games.BlackOrRed.BlackOrRed;
 import net.kingingo.server.games.HigherLower.HigherLower;
 import net.kingingo.server.games.Ladder.Ladder;
 import net.kingingo.server.games.PingPong.PingPong;
@@ -75,6 +76,7 @@ public class GameStage extends Stage{
 		this.games.add(new HigherLower(end));
 		this.games.add(new PingPong(end));
 		this.games.add(new Ladder(end));
+		this.games.add(new BlackOrRed(end));
 	}
 	
 	public Game randomGame() {
@@ -93,7 +95,7 @@ public class GameStage extends Stage{
 		this.win = null;
 		this.lose = null;
 //		this.current = randomGame();
-		this.current = this.games.get(2);
+		this.current = this.games.get(3);
 		this.current.start(getUser1(),getUser2());
 		
 		setCountdown("game ends in");
