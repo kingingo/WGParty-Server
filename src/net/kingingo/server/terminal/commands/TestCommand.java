@@ -13,6 +13,7 @@ import net.kingingo.server.event.EventManager;
 import net.kingingo.server.packets.server.MatchPacket;
 import net.kingingo.server.stage.Stage;
 import net.kingingo.server.stage.stages.Countdown;
+import net.kingingo.server.stage.stages.GameStage;
 import net.kingingo.server.stage.stages.PlayerChoose;
 import net.kingingo.server.stage.stages.ReadyStage;
 import net.kingingo.server.terminal.CommandExecutor;
@@ -32,6 +33,14 @@ public class TestCommand implements CommandExecutor{
 			return;
 		}
 		switch(args[0].toUpperCase()) {
+		case "SETGAME":
+			int i = Integer.valueOf(args[1]);
+			Stage.get(GameStage.class).i = i;
+			Main.printf("Set Game Position "+i);
+			break;
+		case "THREADS":
+			Thread.getAllStackTraces().keySet().forEach((t) -> Main.printf(t.getName() + " Daemon:" + t.isDaemon() + " Alive:" + t.isAlive()));
+			break;
 		case "RESIZE":
 			try {
 				String root = "C:"
@@ -57,7 +66,7 @@ public class TestCommand implements CommandExecutor{
 			
 			break;
 		case "SETTIME":
-			long time = Integer.valueOf(args[1]) * TimeSpan.MINUTE;
+			long time = Integer.valueOf(args[1]) * TimeSpan.SECOND;
 			
 			Stage.currentStage().setTime(time);
 			Main.printf(Stage.currentStage().getClass().getSimpleName()+" set time to "+time);

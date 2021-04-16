@@ -31,7 +31,7 @@ public class HandshakeAckPacket extends Packet{
 
 	@Override
 	public void writeToOutput(DataOutputStream out) throws IOException {
-		out.writeInt((this.accepted?1:0));
+		out.writeBoolean(this.accepted);
 		
 		if(this.accepted) {
 			out.writeUTF(this.name);

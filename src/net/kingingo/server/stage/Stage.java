@@ -187,6 +187,7 @@ public abstract class Stage implements EventListener, Runnable{
 		this.thread.interrupt();
 		
 		this.thread = new Thread(this);
+		this.thread.setName(this.getClass().getSimpleName());
 		this.active=true;
 		this.thread.start();
 		setCountdown(previousText);
@@ -233,6 +234,7 @@ public abstract class Stage implements EventListener, Runnable{
 		this.end_time = System.currentTimeMillis() + this.timeout;
 		this.active=true;
 		this.thread = new Thread(this);
+		this.thread.setName(this.getClass().getSimpleName());
 		this.thread.start();
 	}
 	

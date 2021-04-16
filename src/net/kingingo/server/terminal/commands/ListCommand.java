@@ -1,7 +1,14 @@
 package net.kingingo.server.terminal.commands;
 
+import java.util.HashMap;
+import java.util.Set;
+
 import net.kingingo.server.Main;
 import net.kingingo.server.terminal.CommandExecutor;
+import net.kingingo.server.user.User;
+import net.kingingo.server.user.UserStats;
+
+import org.java_websocket.WebSocket;
 
 public class ListCommand implements CommandExecutor{
 
@@ -18,6 +25,12 @@ public class ListCommand implements CommandExecutor{
 		default:
 			Main.printf(size + " Clients are connected!");
 		}
+		User[] list = User.getAllStats().keySet().toArray(new User[0]);
+		String users = "";
+		for(int i = 0; i < list.length; i++) {
+			users+=list[i].getName() + ((i+1) == list.length ? "" : (i == (list.length-2) ? " and " : ","));
+		}
+		Main.printf(users);
 	}
 
 	@Override

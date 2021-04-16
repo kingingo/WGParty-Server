@@ -16,6 +16,7 @@ public class PingThread implements Runnable, EventListener{
 	
 	public PingThread() {
 		this.thread=new Thread(this);
+		this.thread.setName("PingThread");
 		this.active=true;
 		this.thread.start();
 		EventManager.register(this);

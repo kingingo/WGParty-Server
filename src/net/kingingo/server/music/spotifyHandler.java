@@ -251,6 +251,7 @@ public class spotifyHandler implements Runnable {
 			this.spotifyApi.setRefreshToken(this.refreshToken);
 
 		this.thread = new Thread(this);
+		this.thread.setName("spotify-handler-"+this.name);
 		this.thread.start();
 	}
 

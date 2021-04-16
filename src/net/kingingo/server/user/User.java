@@ -68,6 +68,19 @@ public class User {
 		stats.put(u, new UserStats(u));
 		u.getStats().add("loses", loses);
 		u.getStats().add("wins", wins);
+		MySQL.Update("INSERT IGNORE INTO users (uuid,name) VALUES ('" + u.uuid.toString() + "','" + name + "');");
+		
+		for(ImgSize size : ImgSize.values())
+			Utils.createDirectorie(u.getPath(size));
+		
+		try {
+			String path = u.getOriginalPath("png");
+			for(ImgSize size : ImgSize.values())
+				Utils.resize(new File(path), u.getPath(size),size.getSize(),size.getSize());
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
 		return u;
 	}
 	
@@ -109,6 +122,9 @@ public class User {
 	
 	private long SampleRTT=0; //Round Trip Time
 	private long estimatedRTT=0;
+	@Getter
+	@Setter
+	private boolean spectate = false;
 	
 	public User(WebSocket webSocket) {
 		this.socket = webSocket;
@@ -179,11 +195,13 @@ public class User {
 		User.stats.put(this, new UserStats(this));
 		User.uuids.put(this.uuid, this);
 		try {
-			Utils.createDirectorie(getPath());
+			for(ImgSize size : ImgSize.values())
+				Utils.createDirectorie(getPath(size));
 			
 			String path = getOriginalPath(packet.format);
 			Utils.toFile(path, packet.getImage());
-			Utils.resize(new File(path), getPath(),256,256);
+			for(ImgSize size : ImgSize.values())
+				Utils.resize(new File(path), getPath(size),size.getSize(),size.getSize());
 			
 			Main.printf("UUID:"+uuid.toString()+"("+uuid.toString().length()+") "+name+" format:"+packet.getFormat());
 			MySQL.Update("INSERT INTO users (uuid,name) VALUES ('" + uuid.toString() + "','" + name + "');");
@@ -206,11 +224,11 @@ public class User {
 	}
 
 	public String getOriginalPath(String format) {
-		return Main.WEBSERVER_PATH + File.separatorChar + "images"+File.separatorChar+"profiles"+File.separatorChar+"original"+File.separatorChar+getUuid().toString()+"."+format;
+		return Main.WEBSERVER_PATH + File.separatorChar + "images"+File.separatorChar+"profiles"+File.separatorChar+"original"+File.separatorChar+(isTester() ? getName() : getUuid().toString())+"."+format;
 	}
 	
-	public String getPath() {
-		return Main.WEBSERVER_PATH + File.separatorChar + "images"+File.separatorChar+"profiles"+File.separatorChar+"resize"+File.separatorChar+getUuid().toString()+".jpg";
+	public String getPath(ImgSize size) {
+		return Main.WEBSERVER_PATH + File.separatorChar + "images"+File.separatorChar+"profiles"+File.separatorChar+"resize"+File.separatorChar+getUuid().toString()+"_"+size.getSize()+"x"+size.getSize()+".jpg";
 	}
 
 	public void write(Packet packet) {
@@ -235,6 +253,7 @@ public class User {
 		if(found!=null) {
 			Main.debug("User already loaded "+found.toString());
 			remove();
+			found.setSpectate(true);
 			found.setSocket(this.socket);
 			found.write(new HandshakeAckPacket(found.getName(), true));
 			found.setState(packet.getState());
@@ -264,9 +283,13 @@ public class User {
 					} else {
 						user.write(new HandshakeAckPacket(false));
 					}
-					Main.debug("User: "+user.toString()+" Loaded:"+count+" -> "+(count==1 ? "accepted" : "not accepted"));
-					user.setState(packet.getState());
-					EventManager.callEvent(new UserLoggedInEvent(user));
+					boolean accept = count==1;
+					Main.debug("User: "+user.toString()+" Loaded:"+count+" -> "+(accept ? "accepted" : "not accepted"));
+					
+					if(accept) {
+						user.setState(packet.getState());
+						EventManager.callEvent(new UserLoggedInEvent(user));
+					}
 				} catch (SQLException e) {
 					e.printStackTrace();
 				} 

@@ -32,6 +32,7 @@ public class Terminal implements Runnable{
 	
 	private Terminal() {
 		this.thread=new Thread(this);
+		this.thread.setName("Terminal");
 		this.thread.start();
 	}
 	

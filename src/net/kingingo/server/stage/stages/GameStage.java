@@ -89,13 +89,17 @@ public class GameStage extends Stage{
 		return Stage.BREAK;
 	}
 	
+	public int i = 2;
 	@Override
 	public void start() {
 		super.start();
 		this.win = null;
 		this.lose = null;
 //		this.current = randomGame();
-		this.current = this.games.get(3);
+		if(i >= this.games.size())i=0;
+		
+		this.current = this.games.get(i);
+		i++;
 		this.current.start(getUser1(),getUser2());
 		
 		setCountdown("game ends in");

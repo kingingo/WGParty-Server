@@ -16,6 +16,7 @@ import net.kingingo.server.event.events.UserLoggedInEvent;
 import net.kingingo.server.packets.client.HandshakePacket;
 import net.kingingo.server.packets.client.PongPacket;
 import net.kingingo.server.packets.client.RegisterPacket;
+import net.kingingo.server.packets.client.SpectatePacket;
 import net.kingingo.server.packets.client.StatsPacket;
 import net.kingingo.server.packets.client.pingpong.PingPongUserPacket;
 import net.kingingo.server.packets.server.IdsPacket;
@@ -61,7 +62,7 @@ public class UserListener implements EventListener{
 	@EventHandler
 	public void change(StateChangeEvent ev) {
 		if(ev.getNewState() == State.OFFLINE) {
-			if(!ev.getUser().isUnknown()) {
+			if(!ev.getUser().isUnknown() && ev.getUser().getStats()!=null) {
 				ev.getUser().getStats().save();
 			}
 			ev.getUser().setOffline(System.currentTimeMillis());
@@ -89,6 +90,14 @@ public class UserListener implements EventListener{
 			if(packet.isUpdate()) {
 				StatsAckPacket ack = new StatsAckPacket(User.getAllStats());
 				ev.getUser().write(ack);
+			}
+		}else if(ev.getPacket() instanceof SpectatePacket) {
+			boolean spec = ev.getUser().isSpectate();
+			ev.getUser().setSpectate(ev.getPacket(SpectatePacket.class).isSpectate());
+			
+			if(spec!=ev.getUser().isSpectate()) {
+				StatsAckPacket ack = new StatsAckPacket(ev.getUser());
+				User.broadcast(ack);
 			}
 		}
 	}

@@ -15,7 +15,7 @@ public class StatsPacket extends Packet{
 	
 	@Override
 	public void parseFromInput(DataInputStream in) throws IOException {
-		this.update=(in.readInt() == 1 ? true : false);
+		this.update=in.readBoolean();
 	}
 
 	@Override

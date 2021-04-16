@@ -16,14 +16,16 @@ public class StatsAckPacket extends Packet{
 
 	@Getter
 	private HashMap<User,UserStats> stats;
-	private User user;
-	private UserStats stat;
 	
 	public StatsAckPacket() {}
 	
+	public StatsAckPacket(User user) {
+		this(user, User.getAllStats().get(user));
+	}
+	
 	public StatsAckPacket(User user, UserStats stat) {
-		this.user=user;
-		this.stat=stat;
+		this.stats = new HashMap<User,UserStats>();
+		this.stats.put(user, stat);
 	}
 	
 	public StatsAckPacket(HashMap<User, UserStats> stats) {
@@ -35,22 +37,13 @@ public class StatsAckPacket extends Packet{
 
 	@Override
 	public void writeToOutput(DataOutputStream out) throws IOException {
-		if(this.stats==null) {
-			out.writeInt(1);
+		out.writeInt(this.stats.size());
+		for(User user : this.stats.keySet()) {
 			out.writeUTF(user.getName());
 			out.writeUTF(user.getUuid().toString());
-			this.stat.writeToOutput(out);
-		}else {
-			out.writeInt(this.stats.size());
-			Main.debug("LENGTH: "+this.stats.size());
-			for(User user : this.stats.keySet()) {
-				Main.debug("STATSACK: "+user.getName()+" "+user.getUuid().toString());
-				out.writeUTF(user.getName());
-				out.writeUTF(user.getUuid().toString());
-				this.stats.get(user).writeToOutput(out);
-			}
+			out.writeBoolean(user.isSpectate());
+			this.stats.get(user).writeToOutput(out);
 		}
-		
 	}
 
 	public String toString() {

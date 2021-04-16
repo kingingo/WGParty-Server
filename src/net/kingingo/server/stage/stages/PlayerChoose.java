@@ -1,6 +1,7 @@
 package net.kingingo.server.stage.stages;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import net.kingingo.server.event.EventHandler;
 import net.kingingo.server.event.events.ClientConnectEvent;
@@ -72,11 +73,18 @@ public class PlayerChoose extends Stage{
 	
 	public void start(User u1, User u2) {
 		setCountdown("game starts in");
-		this.users = new ArrayList<User>(User.getAllStats().keySet());
+		
+		User[] users = User.getAllStats().keySet().toArray(new User[0]);
+		this.users = new ArrayList<User>();
+		for(int i = 0; i < users.length; i++) {
+			if(!users[i].isSpectate())
+				this.users.add(users[i]);
+		}
+		
 		this.u1 = (u1 == null ? pickUser() : u1);
 		this.u2 = (u2 == null ? pickUser() : u2);
 		
-		StartMatchPacket start = new StartMatchPacket(this.u1,this.u2,users);
+		StartMatchPacket start = new StartMatchPacket(this.u1,this.u2,this.users);
 		broadcast(start);
 		printf("Choose Player with "+this.u1.getName()+" "+this.u2.getName());
 	}
