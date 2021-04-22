@@ -111,6 +111,6 @@ public abstract class Game implements EventListener{
 	}
 	
 	public void print(String msg) {
-		Main.printf(getName(), msg);
+		Main.printf("d",getName(), msg);
 	}
 }

@@ -7,6 +7,7 @@ import java.util.List;
 import net.kingingo.server.Main;
 import net.kingingo.server.mysql.MySQL;
 import net.kingingo.server.terminal.CommandExecutor;
+import net.kingingo.server.terminal.Terminal;
 import net.kingingo.server.user.User;
 import net.kingingo.server.user.UserStats;
 
@@ -28,6 +29,7 @@ public class StopCommand implements CommandExecutor{
 		
 		MySQL.close();
 		Main.printf("Server has stopped!");
+		Terminal.getInstance().stop();
 		System.exit(0);
 	}
 

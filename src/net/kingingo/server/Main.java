@@ -75,19 +75,24 @@ public class Main {
 	}
 	
 	public static void error(String msg) {
-		printf("ERROR",msg);
+		System.err.println(msg);
 	}
 	
 	public static void debug(String msg) {
-		printf("Debug",msg);
+		printf("6","DEBUG",msg);
 	}
 	
+
 	public static void printf(String prefix, String msg) {
-		System.out.println("["+prefix+"|"+date()+"]: "+msg);
+		printf("",prefix,msg);
+	}
+	
+	public static void printf(String color , String prefix, String msg) {
+		System.out.println("§"+color+"["+prefix+"|"+date()+"]:§f "+msg);
 	}
 	
 	public static void printf(String msg) {
-		printf("Main", msg);
+		System.out.println(msg);
 	}
 
 	public static String date() {

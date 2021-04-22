@@ -17,6 +17,8 @@ import net.kingingo.server.stage.stages.GameStage;
 import net.kingingo.server.stage.stages.PlayerChoose;
 import net.kingingo.server.stage.stages.ReadyStage;
 import net.kingingo.server.terminal.CommandExecutor;
+import net.kingingo.server.terminal.table.TerminalTable;
+import net.kingingo.server.terminal.table.TerminalTable.Align;
 import net.kingingo.server.user.State;
 import net.kingingo.server.user.User;
 import net.kingingo.server.user.UserStats;
@@ -66,7 +68,7 @@ public class TestCommand implements CommandExecutor{
 			
 			break;
 		case "SETTIME":
-			long time = Integer.valueOf(args[1]) * TimeSpan.SECOND;
+			long time = Integer.valueOf(args[1]) * TimeSpan.MINUTE;
 			
 			Stage.currentStage().setTime(time);
 			Main.printf(Stage.currentStage().getClass().getSimpleName()+" set time to "+time);
@@ -138,9 +140,16 @@ public class TestCommand implements CommandExecutor{
 			break;
 		case "STAGE":
 			if(args.length == 1) {
-				Main.printf("Current Stage: "+Stage.currentStage()+" "+Stage.getUser1()+"/"+Stage.getUser2());
+				TerminalTable table = new TerminalTable(
+						new TerminalTable.TerminalColumn[]{
+								new TerminalTable.TerminalColumn("Stage", Align.CENTER),
+								new TerminalTable.TerminalColumn("active", Align.CENTER)
+						}
+				);
 				for(Stage st : Stage.getStages())
-					Main.printf("    "+st);
+					table.addRow(st.getName(), st.isActive() ? "AKTIV" : "OFFLINE");
+				
+				table.printTable();
 			} else {
 				switch(args[1].toUpperCase()) {
 				case "NEXT":

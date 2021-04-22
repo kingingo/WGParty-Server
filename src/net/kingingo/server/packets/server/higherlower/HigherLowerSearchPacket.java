@@ -22,10 +22,10 @@ public class HigherLowerSearchPacket extends Packet{
 	@Override
 	public void writeToOutput(DataOutputStream out) throws IOException {
 		out.writeInt(this.searchs.length);
-		for(Search s : searchs)s.writeToOutput(out);
+		for(Search s : this.searchs)s.writeToOutput(out);
 	}
 	
 	public String toString() {
-		return this.getPacketName()+" searchs:"+searchs.length;
+		return this.getPacketName()+" searchs:"+(this.searchs == null ? "NULL" : this.searchs.length);
 	}
 }

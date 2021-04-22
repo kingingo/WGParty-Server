@@ -17,6 +17,18 @@ public class Wheel {
 	private ArrayList<Alk> alk = new ArrayList<Alk>();
 	
 	private Wheel() {
+		/**
+		 * VODKA
+		 * JAEGERMEISTER 
+		 * TEQUILA
+		 * BERLINER LUFT
+		 * WHISKEY 
+		 * RUM
+		 * HASEL SCHNAPS
+		 */
+		
+		
+		
 		alk.add(new Alk("Vodka",1,"vodka.png"));
 		alk.add(new Alk("Jaegermeister",1,"jaegermeister.png"));
 		alk.add(new Alk("Tequila",1,"tequila.png"));

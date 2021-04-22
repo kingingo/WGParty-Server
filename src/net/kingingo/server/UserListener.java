@@ -106,14 +106,14 @@ public class UserListener implements EventListener{
 	public void recm(PacketReceiveEvent ev) {
 		if(!(ev.getPacket() instanceof PongPacket) 
 				&& !(ev.getPacket() instanceof PingPongUserPacket))
-			Main.printf("PACKET SEND","SERVER => "+ ( ev.getUser() == null ? "USER IS NULL?!" : ev.getUser()) +" ["+(ev.getPacket() == null ? "PACKET IS NULL?!" : ev.getPacket())+"]");
+			Main.printf("SERVER <= "+ ( ev.getUser() == null ? "USER IS NULL?!" : ev.getUser()) +" ["+(ev.getPacket() == null ? "PACKET IS NULL?!" : ev.getPacket())+"]");
 	}
 	
 	@EventHandler(priority=EventPriority.HIGHEST)
 	public void send(PacketSendEvent ev) {
 		if(!(ev.getPacket() instanceof PingPacket) 
 				&& !(ev.getPacket() instanceof PingPongUserPacket)) {
-			Main.printf("PACKET SEND","SERVER => "+ ( ev.getUser() == null ? "USER IS NULL?!" : ev.getUser()) +" ["+(ev.getPacket() == null ? "PACKET IS NULL?!" : ev.getPacket())+"]");
+			Main.printf("SERVER => "+ ( ev.getUser() == null ? "USER IS NULL?!" : ev.getUser()) +" ["+(ev.getPacket() == null ? "PACKET IS NULL?!" : ev.getPacket())+"]");
 		}
 	}
 }

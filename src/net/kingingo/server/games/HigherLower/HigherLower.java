@@ -24,6 +24,7 @@ public class HigherLower extends Game{
 
 	private ArrayList<Search> searchs = new ArrayList<>();
 	private Search[] search;
+	private ArrayList<HigherLowerAnsweredPacket[]> answers = new ArrayList<>();
 	
 	public HigherLower(Callback<User[]> endCallback) {
 		super(endCallback);
@@ -54,8 +55,16 @@ public class HigherLower extends Game{
 		if(isActive()) {
 			if(ev.getPacket() instanceof HigherLowerSearchChoosePacket) {
 				HigherLowerSearchChoosePacket packet = ev.getPacket(HigherLowerSearchChoosePacket.class);
-				
 				boolean win = (packet.higher == this.search[packet.leftIndex].amount < this.search[packet.rightIndex].amount);
+				
+				HigherLowerAnsweredPacket[] answers = this.answers.size() > packet.leftIndex/2 ? this.answers.get(packet.leftIndex/2) : null;
+				if(answers==null) {
+					answers = new HigherLowerAnsweredPacket[2]; 
+					this.answers.add(answers);
+				}
+				
+				answers[ (ev.getUser() == getUser1() ? 0 : 1) ] = new HigherLowerAnsweredPacket(ev.getUser().getUuid(), packet.leftIndex, win, packet.higher);
+				this.answers.set(packet.leftIndex/2, answers);
 				
 				if(win) {
 					if(ev.getUser() == getUser1()) {
@@ -64,16 +73,25 @@ public class HigherLower extends Game{
 						this.user2_score++;
 					}
 					print(ev.getUser().getName()+" +1");
-					
-					Stage.broadcast(new HigherLowerAnsweredPacket(ev.getUser().getUuid(), true));
 				} else {
 					print(ev.getUser().getName()+" lost");
-					Stage.broadcast(new HigherLowerAnsweredPacket(ev.getUser().getUuid(), false));
 				}
+				
+				if(this.answers.get(packet.leftIndex/2)[0] != null)
+					Stage.broadcast(this.answers.get(packet.leftIndex/2)[0]);
+				if(this.answers.get(packet.leftIndex/2)[1] != null)
+					Stage.broadcast(this.answers.get(packet.leftIndex/2)[1]);
 			}else if(ev.getPacket() instanceof GameStartAckPacket) {
 				try {
 					HigherLowerSearchPacket packet = new HigherLowerSearchPacket(this.search);
 					ev.getUser().write(packet);
+					
+					for(int i = 0; i < this.answers.size(); i++) {
+						if(this.answers.get(i)[0]!=null)
+							ev.getUser().write(this.answers.get(i)[0]);
+						if(this.answers.get(i)[1]!=null)
+							ev.getUser().write(this.answers.get(i)[1]);
+					}
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -95,7 +113,7 @@ public class HigherLower extends Game{
 	
 	public Search[] randSearch(int size) {
 		Search[] search = new Search[size];
-		ArrayList<Search> clone = (ArrayList<Search>) searchs.clone();
+		ArrayList<Search> clone = (ArrayList<Search>) this.searchs.clone();
 		
 		for(int i = 0; i < size; i++) {
 			search[i] = clone.get(Utils.randInt(0, clone.size()-1));
@@ -107,6 +125,7 @@ public class HigherLower extends Game{
 	
 	public void start(User u1, User u2) {
 		super.start(u1, u2);
+		this.answers.clear();
 		this.search = randSearch(6);
 		
 		for(int i = 0; i < this.search.length; i+=2) {

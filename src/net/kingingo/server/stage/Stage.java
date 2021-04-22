@@ -21,10 +21,49 @@ import net.kingingo.server.stage.stages.WheelStage;
 import net.kingingo.server.user.State;
 import net.kingingo.server.user.User;
 
-public abstract class Stage implements EventListener, Runnable{
-	private static int currentStage = -1;
+//class StageHandler implements Runnable{
+//	@Getter
+//	private boolean active = false;
+//	private Thread thread;
+//	
+//	protected StageHandler() {
+//		start();
+//	}
+//	
+//	public void stop() {
+//		this.active=false;
+//		this.thread.interrupt();
+//	}
+//	
+//	public void start() {
+//		this.active=true;
+//		this.thread = new Thread(this);
+//		this.thread.setName(this.getClass().getSimpleName());
+//		this.thread.start();
+//	}
+//
+//	@Override
+//	public void run() {
+//		Thread thread;
+//		
+//		while(this.active) {
+//			Stage.currentStage().run();
+//		}
+//	}
+//}
+
+public abstract class Stage implements Runnable, EventListener{
+	
+	
+	private static int currentStage = -1;//0
+ //	private static StageHandler handler;
 	private static ArrayList<Class<? extends Stage>> stages_order = new ArrayList<>();
 	private static HashMap<Class<? extends Stage>, Stage> stages = new HashMap<Class<? extends Stage>,Stage>();
+	
+//	public static StageHandler getHandler() {
+//		if(Stage.handler == null)Stage.handler = new StageHandler();
+//		return handler;
+//	}
 	
 	public static ArrayList<Stage> getStages(){
 		ArrayList<Stage> stages = new ArrayList<>();
@@ -50,6 +89,8 @@ public abstract class Stage implements EventListener, Runnable{
 		new GameStage();
 		//4
 		new WheelStage();
+		
+//		getHandler();
 	}
 	
 	public static <T extends Stage> boolean is(Class<T> clazz) {
@@ -182,15 +223,14 @@ public abstract class Stage implements EventListener, Runnable{
 	}
 	
 	public void setTime(long time) {
-		this.timeout = time;
 		this.active=false;
+		this.timeout = time;
 		this.thread.interrupt();
 		
 		this.thread = new Thread(this);
 		this.thread.setName(this.getClass().getSimpleName());
 		this.active=true;
 		this.thread.start();
-		setCountdown(previousText);
 	}
 
 	
@@ -199,26 +239,31 @@ public abstract class Stage implements EventListener, Runnable{
 	public static final int CONTINUE = 2;
 	
 	public void run() {
+
+		try {
 		this.start_time = System.currentTimeMillis();
 		loop: while(this.active) {
-			try {
-				this.end_time = System.currentTimeMillis() + this.timeout;
-				Thread.sleep(this.timeout);
-				if(this.active) {
-					int b = this.running();
-					printf("time over do running "+(b==NEXT_STAGE ? "NEXT_STAGE" : (b==1?"BREAK":"CONTINUE")));
-					switch(b){
-					case NEXT_STAGE:
-						Stage.next();
-						break loop;
-					case BREAK:
-						break loop;
-					}
+			this.end_time = System.currentTimeMillis() + this.timeout;
+			setCountdown(this.previousText != null ? this.previousText : "");
+			Thread.sleep(this.timeout);
+			if(this.active) {
+				int b = this.running();
+				printf("time over do running "+(b==NEXT_STAGE ? "NEXT_STAGE" : (b==1?"BREAK":"CONTINUE")));
+				switch(b){
+				case NEXT_STAGE:
+					Stage.next();
+					break loop;
+				case BREAK:
+					break loop;
 				}
-			} catch (InterruptedException e) {}
+			}
 		}
 		this.active=false;
 		printf("stop!");
+
+		} catch (InterruptedException e) {
+			printf("Interupt "+getClass().getSimpleName()+" Thread");
+		}
 	}
 	
 	public abstract int running();
@@ -226,6 +271,7 @@ public abstract class Stage implements EventListener, Runnable{
 	public void stop() {
 		this.active=false;
 		this.thread.interrupt();
+		this.thread=null;
 	}
 	
 	public void start() {
@@ -240,6 +286,10 @@ public abstract class Stage implements EventListener, Runnable{
 	
 	public void printf(String msg) {
 		Main.printf("Stage-"+this.getClass().getSimpleName()+"-"+Stage.currentStage, msg);
+	}
+	
+	public String getName() {
+		return this.getClass().getSimpleName();
 	}
 	
 	public String toString() {
