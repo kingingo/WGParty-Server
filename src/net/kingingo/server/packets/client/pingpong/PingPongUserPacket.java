@@ -9,24 +9,24 @@ import net.kingingo.server.packets.Packet;
 
 public class PingPongUserPacket extends Packet{
 	
-	private UUID uuid;
-	private double x;
+	public UUID uuid;
+	public double user_y;
 	
 	public PingPongUserPacket() {}
 	
 	@Override
 	public void parseFromInput(DataInputStream in) throws IOException {
 		this.uuid = UUID.fromString(in.readUTF());
-		this.x = in.readDouble();
+		this.user_y = in.readDouble();
 	}
 
 	@Override
 	public void writeToOutput(DataOutputStream out) throws IOException {
 		out.writeUTF(this.uuid.toString());
-		out.writeDouble(this.x);
+		out.writeDouble(this.user_y);
 	}
 	
 	public String toString() {
-		return this.getPacketName();
+		return this.getPacketName()+"user_y: "+this.user_y;
 	}
 }

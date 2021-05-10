@@ -154,7 +154,7 @@ public class CostumSystemPrintStream extends PrintStream {
 
 	@Override
 	public void println(String x) {
-		write("§a[" + Debugger.getLastCallerClass() + "] §f" + ObjectUtils.toString(x));
+		write(Debugger.getLastCallerClass() + "§f" + ObjectUtils.toString(x));
 	}
 
 	@Override

@@ -3,6 +3,7 @@ package net.kingingo.server.terminal.commands;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 import com.google.common.collect.Lists;
 
@@ -10,6 +11,8 @@ import net.kingingo.server.Main;
 import net.kingingo.server.event.Event;
 import net.kingingo.server.event.EventComp;
 import net.kingingo.server.event.EventManager;
+import net.kingingo.server.games.PingPong.PingPong;
+import net.kingingo.server.packets.Packet;
 import net.kingingo.server.packets.server.MatchPacket;
 import net.kingingo.server.stage.Stage;
 import net.kingingo.server.stage.stages.Countdown;
@@ -35,6 +38,14 @@ public class TestCommand implements CommandExecutor{
 			return;
 		}
 		switch(args[0].toUpperCase()) {
+		case "WIN_SCORE":
+			if(args.length > 1) {
+				int score = Integer.valueOf(args[1]);
+				
+				PingPong.WIN_SCORE = score;
+			}
+			Main.printf("PingPong WIN_SCORE:"+PingPong.WIN_SCORE);
+			break;
 		case "SETGAME":
 			int i = Integer.valueOf(args[1]);
 			Stage.get(GameStage.class).i = i;
@@ -72,9 +83,6 @@ public class TestCommand implements CommandExecutor{
 			
 			Stage.currentStage().setTime(time);
 			Main.printf(Stage.currentStage().getClass().getSimpleName()+" set time to "+time);
-			break;
-		case "NEXT":
-			Stage.next();
 			break;
 		case "START":
 			PlayerChoose.start_u1 = (args.length>=2 ? User.getUser(args[1]) : null);
@@ -130,6 +138,9 @@ public class TestCommand implements CommandExecutor{
 		case "TIME":
 			Main.printf("Countdown: "+ Stage.get(Countdown.class).toString());
 			break;
+		case "NEXT":
+			Stage.next();
+			break;
 		case "READY":
 			ReadyStage stage = Stage.get(ReadyStage.class);
 			
@@ -155,6 +166,28 @@ public class TestCommand implements CommandExecutor{
 				case "NEXT":
 					Stage.next();
 					Main.printf("Stage NEXT!");
+					break;
+				case "JUMP":
+					if(args.length < 3) {
+						return;
+					}
+					String classname = args[2];
+					
+					Stage st = null;
+					ArrayList<Stage> stages = Stage.getStages();
+					for(int j = 0; j < stages.size(); j++) {
+						if(stages.get(j).getName().equalsIgnoreCase(classname)) {
+							st = stages.get(j);
+							break;
+						}
+					}
+					
+					if(st == null) {
+						Main.printf("Die Stage "+classname+" wurde nicht gefunden!");
+					} else {
+						Stage.jump(st.getClass());
+						Main.printf("Stage jump "+st.getName());
+					}				
 					break;
 				}
 			}

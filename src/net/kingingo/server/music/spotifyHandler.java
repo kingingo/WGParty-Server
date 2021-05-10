@@ -121,9 +121,13 @@ public class spotifyHandler implements Runnable {
 						Main.printf("Progess: " + currentlyPlaying.getProgress_ms() + "ms");
 						Main.printf("Is playing: " + currentlyPlaying.getIs_playing());
 						Main.printf("Item: " + currentlyPlaying.getItem().getName());
-						Main.printf("Timestamp: " + currentlyPlaying.getTimestamp());
 						Track track = ((Track) currentlyPlaying.getItem());
 
+						Main.printf("Track ExternalUrls: " +  track.getExternalUrls());
+						Main.printf("Track Uri: " +  track.getUri());
+						Main.printf("Track PreviewUrl: " +  track.getPreviewUrl());
+						Main.printf("Track Artists: " +  track.getArtists());
+						Main.printf("Track Duration: " +  track.getDurationMs());
 						Main.printf("Id: " + track.getId());
 						Main.printf("Album-Id: " + track.getAlbum().getId());
 						Image[] images = track.getAlbum().getImages();

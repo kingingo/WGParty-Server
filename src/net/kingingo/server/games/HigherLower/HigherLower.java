@@ -64,6 +64,14 @@ public class HigherLower extends Game{
 				}
 				
 				answers[ (ev.getUser() == getUser1() ? 0 : 1) ] = new HigherLowerAnsweredPacket(ev.getUser().getUuid(), packet.leftIndex, win, packet.higher);
+				print("HigherLowerSearchChoosePacket:");
+				print("	GOT FROM user:"+ev.getUser().getName());
+				print("	win:"+win);
+				print("		higher:"+packet.higher+" "+this.search[packet.leftIndex].amount+"<"+this.search[packet.rightIndex].amount);
+				print("		leftIndex:"+packet.leftIndex);
+				print("		rightIndex:"+packet.rightIndex);
+				print("		left-amount:"+this.search[packet.leftIndex].amount);
+				print("		right-amount:"+this.search[packet.rightIndex].amount);
 				this.answers.set(packet.leftIndex/2, answers);
 				
 				if(win) {

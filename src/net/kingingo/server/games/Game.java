@@ -22,7 +22,7 @@ public abstract class Game implements EventListener{
 	protected boolean user2_done=false;
 	@Getter
 	private boolean active = false;
-	private Callback<User[]> endCallback;
+	public Callback<User[]> endCallback;
 	protected int user1_score = 0;
 	protected int user2_score = 0;
 	
@@ -86,7 +86,7 @@ public abstract class Game implements EventListener{
 		this.active=false;
 		this.user1_done=false;
 		this.user2_done=false;
-		this.endCallback.run((win==null&&lose==null ? null : new User[] {win,lose}));
+		if(this.endCallback!=null)this.endCallback.run((win==null&&lose==null ? null : new User[] {win,lose}));
 		reset();
 	}
 

@@ -78,20 +78,22 @@ public class WSocketServer extends WebSocketServer{
 	public void onMessage(WebSocket conn, ByteBuffer buffer) {
 		byte[] buf = buffer.array();
 		
-//		for(byte b : buf)System.out.print(b+",");
-//		System.out.println();
-		
 		ByteArrayInputStream bais = new ByteArrayInputStream(buf);
 		DataInputStream in = new DataInputStream(bais);
 		
 		try {
 			int packetLength = in.readInt();
 			int packetId = in.readInt();
-			
-//			Main.printf("LENGTH: "+packetLength);
-//			Main.printf("ID:"+packetId);
-//			Main.printf("Boolean: "+in.readBoolean());
-			
+			User user = User.getUser(conn);
+			if(user == null) {
+				Main.debug("WSocketServer->onMessage: User is null");
+				Main.debug("      PacketId: "+packetId);
+				Main.debug("      Packet: "+Packet.getPacketName(packetId));
+				
+				conn.close();
+				Main.debug("      connection closed! Force to Reconnect...");
+				return;
+			}
 			
 			if(packetLength != in.available()) {
 				Main.printf("The length doesn't suit to the packet("+packetId+")... "+in.available()+" != "+packetLength);
@@ -99,7 +101,7 @@ public class WSocketServer extends WebSocketServer{
 			}
 
 			Packet packet = Packet.create(packetId, in);
-			PacketReceiveEvent ev = new PacketReceiveEvent(User.getUser(conn), packet);
+			PacketReceiveEvent ev = new PacketReceiveEvent(user, packet);
 			EventManager.callEvent(ev);
 		} catch (IOException e) {
 			e.printStackTrace();

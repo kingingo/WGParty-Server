@@ -27,6 +27,7 @@ import net.kingingo.server.utils.Callback;
 import net.kingingo.server.utils.Utils;
 
 public class User {
+	private static int CONNECT_COUNTER = 0;
 	public static final double ALPHA = 0.125;
 	@Getter
 	private static HashMap<WebSocket, User> users = new HashMap<WebSocket, User>();
@@ -113,6 +114,8 @@ public class User {
 	private String name;
 	@Getter
 	private UUID uuid;
+	@Getter
+	private int connectId=0;
 	
 	@Getter
 	private State state = State.HANDSHAKE;
@@ -127,6 +130,7 @@ public class User {
 	private boolean spectate = false;
 	
 	public User(WebSocket webSocket) {
+		this.connectId = CONNECT_COUNTER++;
 		this.socket = webSocket;
 		if(webSocket!=null)User.getUsers().put(webSocket, this);
 	} 
@@ -329,6 +333,6 @@ public class User {
 	}
 	
 	public String toString() {
-		return (name == null ? (this.uuid == null ? "UNKOWN" : this.uuid.toString()) : name.toUpperCase());
+		return (name == null ? (this.uuid == null ? "UNKOWN"+this.connectId : this.uuid.toString()) : name.toUpperCase());
 	}
 }

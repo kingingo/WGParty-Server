@@ -22,7 +22,6 @@ import net.kingingo.server.utils.Utils;
 
 public class GameStage extends Stage{
 	
-	
 	private ArrayList<Game> games = new ArrayList<>();
 	public Game current;
 	@Getter
@@ -79,6 +78,10 @@ public class GameStage extends Stage{
 		this.games.add(new BlackOrRed(end));
 	}
 	
+	public boolean drawn() {
+		return this.win == null && this.lose == null;
+	}
+	
 	public Game randomGame() {
 		return this.games.get(Utils.randInt(0, this.games.size()-1));
 	}
@@ -87,6 +90,14 @@ public class GameStage extends Stage{
 		printf("Game Timeout reached");
 		this.current.end();
 		return Stage.BREAK;
+	}
+	
+	public void stop() {
+		super.stop();
+		
+		if(this.current != null) {
+			this.current.end();
+		}
 	}
 	
 	public int i = 2;

@@ -54,7 +54,7 @@ public class WheelStage extends Stage{
 	}
 
 	public int running() {
-		if(this.rolled==0) {
+		if(this.rolled==0 && !Stage.get(GameStage.class).drawn()) {
 			this.rolled=System.currentTimeMillis();
 			broadcast(new WheelSpinPacket(new Random().nextFloat()));
 		}

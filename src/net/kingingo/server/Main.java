@@ -21,13 +21,13 @@ public class Main {
 //	public static final String WEBSERVER_PATH = "C:"+File.separatorChar+"Users"+File.separatorChar+"darouser"+File.separatorChar+"git"+File.separatorChar+"wgparty"+File.separatorChar+"WGParty"+File.separatorChar+"src";
 	public static final int DEFAULT_PORT = 8887;
 	public static final int PING_TIME = 10; //secs
-	private static final SimpleDateFormat DATE_FORMAT_NOW = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	private static UserListener listener;
 	private static PingThread pingThread;
 	
 	public static void registerCommands() {
-		printf("Loading Terminal...");
 		Terminal.getInstance();
+		printf("Loaded Terminal");
+		printf("Loading Cmds:");
 		Terminal.loadCommands();
 	}
 	
@@ -45,8 +45,8 @@ public class Main {
 	}
 	
 	public static void init() {
-		Packet.loadPackets();
 		registerCommands();
+		Packet.loadPackets();
 		//Not Connected?
 		boolean con = false;
 		do{
@@ -88,14 +88,10 @@ public class Main {
 	}
 	
 	public static void printf(String color , String prefix, String msg) {
-		System.out.println("§"+color+"["+prefix+"|"+date()+"]:§f "+msg);
+		System.out.println("§"+color+"["+prefix+"]:§f "+msg);
 	}
 	
 	public static void printf(String msg) {
 		System.out.println(msg);
-	}
-
-	public static String date() {
-		return DATE_FORMAT_NOW.format(Calendar.getInstance().getTime());
 	}
 }

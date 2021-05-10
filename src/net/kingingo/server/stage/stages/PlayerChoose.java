@@ -93,5 +93,7 @@ public class PlayerChoose extends Stage{
 	public void start() {
 		super.start();
 		start(PlayerChoose.start_u1,PlayerChoose.start_u2);
+		PlayerChoose.start_u1=null;
+		PlayerChoose.start_u2=null;
 	}
 }

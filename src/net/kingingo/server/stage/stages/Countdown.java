@@ -45,7 +45,7 @@ public class Countdown extends Stage{
 			return Stage.NEXT_STAGE;
 		}else {
 			Stage.currentStage().start();
-			return Stage.CONTINUE;
+			return Stage.RUNNING;
 		}
 	}
 	

@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import com.mysql.cj.util.Util;
+
 import lombok.Getter;
 import net.kingingo.server.Main;
 import net.kingingo.server.event.EventHandler;
@@ -20,6 +22,7 @@ import net.kingingo.server.stage.stages.ReadyStage;
 import net.kingingo.server.stage.stages.WheelStage;
 import net.kingingo.server.user.State;
 import net.kingingo.server.user.User;
+import net.kingingo.server.utils.Utils;
 
 //class StageHandler implements Runnable{
 //	@Getter
@@ -54,8 +57,13 @@ import net.kingingo.server.user.User;
 
 public abstract class Stage implements Runnable, EventListener{
 	
+	public static final int NEXT_STAGE = 0;
+	public static final int BREAK = 1;
+	public static final int RUNNING = 2;
+	public static final int CHANGING_STAGE = 3;
 	
 	private static int currentStage = -1;//0
+	private static int status = -1;
  //	private static StageHandler handler;
 	private static ArrayList<Class<? extends Stage>> stages_order = new ArrayList<>();
 	private static HashMap<Class<? extends Stage>, Stage> stages = new HashMap<Class<? extends Stage>,Stage>();
@@ -118,55 +126,77 @@ public abstract class Stage implements Runnable, EventListener{
 		return get(currentStage);
 	}
 	
+	private static boolean lock() {
+		if(Stage.status == CHANGING_STAGE) {
+			Main.debug("Stage is changing!");
+			return true;
+		}
+		Stage.status = CHANGING_STAGE;
+		return false;
+	}
+	
+	private static void unlock() {
+		Stage.status = RUNNING;
+	}
+	
 	public static <T extends Stage> T jump(Class<T> clazz) {
-		T stage = (T) stages.get(clazz);
-		Main.printf("JUMP-STAGE", currentStage()+" jump to "+stage);
-		if(currentStage>=0) {
-			currentStage().stop();
+		if(lock())return null;
+		try {
+			T stage = (T) stages.get(clazz);
+			Main.printf("JUMP-STAGE", currentStage()+" jump to "+stage);
+			if(currentStage>=0) {
+				currentStage().stop();
+			}
+			int index = 0;
+			for(Class<? extends Stage> c : stages_order) {
+				Main.printf("JUMP", c.getSimpleName()+" "+index);
+				if(c == clazz)break;
+				index++;
+			}
+			
+			currentStage=index;
+			stage.start();
+			Main.printf("JUMP-STAGE", "Start "+stage+" stage:"+index);
+			return stage;
+		}finally{
+			unlock();
 		}
-		int index = 0;
-		for(Class<? extends Stage> c : stages_order) {
-			Main.printf("JUMP", c.getSimpleName()+" "+index);
-			if(c == clazz)break;
-			index++;
-		}
-		
-		currentStage=index;
-		stage.start();
-		Main.printf("JUMP-STAGE", "Start "+stage+" stage:"+index);
-		
-		return stage;
 	}
 	
 	public static Stage next() {
-		if(currentStage == 0) {
-			for(User u : User.getAllStats().keySet()) {
-				if(u.getState() == State.DASHBOARD_PAGE) {
-					u.setState(State.INGAME);
+		if(lock())return null;
+		try {
+			if(currentStage == 0) {
+				for(User u : User.getAllStats().keySet()) {
+					if(u.getState() == State.DASHBOARD_PAGE) {
+						u.setState(State.INGAME);
+					}
 				}
 			}
-		}
-		
-		if(currentStage>=0) {
-			currentStage().stop();
-		} 
-		
-		if(currentStage == (stages.size()-1)) {
-			currentStage=-1;
-			for(User u : User.getAllStats().keySet()) {
-				if(u.getState() == State.INGAME) {
-					u.setState(State.DASHBOARD_PAGE);
+			
+			if(currentStage>=0) {
+				currentStage().stop();
+			} 
+			
+			if(currentStage == (stages.size()-1)) {
+				currentStage=-1;
+				for(User u : User.getAllStats().keySet()) {
+					if(u.getState() == State.INGAME) {
+						u.setState(State.DASHBOARD_PAGE);
+					}
 				}
 			}
+			Stage old = currentStage();
+			
+			currentStage++;
+			Stage s = currentStage();
+			
+			s.start();
+			Main.printf("STAGE NEXT", currentStage+"("+get((currentStage-1))+") old:"+old+" new:"+s);
+			return s;
+		}finally {
+			unlock();
 		}
-		Stage old = currentStage();
-		
-		currentStage++;
-		Stage s = currentStage();
-		
-		s.start();
-		Main.printf("STAGE NEXT", currentStage+"("+get((currentStage-1))+") old:"+old+" new:"+s);
-		return s;
 	}
 	
 	public static void broadcast(Packet packet, List<User> blackList) {
@@ -187,6 +217,7 @@ public abstract class Stage implements Runnable, EventListener{
 	
 	@Getter
 	private boolean active = false;
+	private boolean restart = false;
 	private Thread thread;
 	@Getter
 	protected long timeout;
@@ -223,46 +254,52 @@ public abstract class Stage implements Runnable, EventListener{
 	}
 	
 	public void setTime(long time) {
+		this.restart=true;
 		this.active=false;
 		this.timeout = time;
 		this.thread.interrupt();
-		
-		this.thread = new Thread(this);
-		this.thread.setName(this.getClass().getSimpleName());
-		this.active=true;
-		this.thread.start();
 	}
-
-	
-	public static final int NEXT_STAGE = 0;
-	public static final int BREAK = 1;
-	public static final int CONTINUE = 2;
 	
 	public void run() {
 
 		try {
-		this.start_time = System.currentTimeMillis();
-		loop: while(this.active) {
-			this.end_time = System.currentTimeMillis() + this.timeout;
-			setCountdown(this.previousText != null ? this.previousText : "");
-			Thread.sleep(this.timeout);
-			if(this.active) {
-				int b = this.running();
-				printf("time over do running "+(b==NEXT_STAGE ? "NEXT_STAGE" : (b==1?"BREAK":"CONTINUE")));
-				switch(b){
-				case NEXT_STAGE:
-					Stage.next();
-					break loop;
-				case BREAK:
-					break loop;
+			this.start_time = System.currentTimeMillis();
+			loop: while(this.active) {
+				this.end_time = System.currentTimeMillis() + this.timeout;
+				setCountdown(this.previousText != null ? this.previousText : "");
+				Thread.sleep(this.timeout);
+				if(this.active) {
+					int b = this.running();
+					Stage.status = b;
+					printf("time over do running "+(b==NEXT_STAGE ? "NEXT_STAGE" : (b==1?"BREAK":"CONTINUE")));
+					switch(b){
+					case NEXT_STAGE:
+						Stage.next();
+						break loop;
+					case BREAK:
+						break loop;
+					}
 				}
 			}
-		}
-		this.active=false;
-		printf("stop!");
 
-		} catch (InterruptedException e) {
+		} catch(NullPointerException e) {
+			printf("Nullpointer "+getClass().getSimpleName()+" Thread");
+			e.printStackTrace();
+		}  catch (InterruptedException e) {
 			printf("Interupt "+getClass().getSimpleName()+" Thread");
+		} finally {
+			
+			if(this.restart) {
+				this.restart=false;
+				this.active=true;
+				
+				this.thread = new Thread(this);
+				this.thread.setName(this.getClass().getSimpleName());
+				this.thread.start();
+				printf("Thread restarted!");
+			}
+			
+			printf("stop! run time:"+Utils.toTime((System.currentTimeMillis()-this.start_time)));
 		}
 	}
 	

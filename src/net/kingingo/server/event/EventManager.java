@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 
+import net.kingingo.server.Main;
+
 
 public class EventManager {
 	
@@ -66,6 +68,7 @@ public class EventManager {
 	        for(ArrayList<EventComp> list : events.values()) {
 	        	Collections.sort(list);
 	        }
+	        Main.debug("EventManager "+listener.getClass().getSimpleName()+" registered");
 		}
 		
 		//Feuert das Event ab
