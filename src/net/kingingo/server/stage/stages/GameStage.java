@@ -11,6 +11,7 @@ import net.kingingo.server.games.BlackOrRed.BlackOrRed;
 import net.kingingo.server.games.HigherLower.HigherLower;
 import net.kingingo.server.games.Ladder.Ladder;
 import net.kingingo.server.games.PingPong.PingPong;
+import net.kingingo.server.games.ScissorsStonePaper.ScissorsStonePaper;
 import net.kingingo.server.packets.client.games.GameStartAckPacket;
 import net.kingingo.server.packets.server.ToggleStagePacket;
 import net.kingingo.server.stage.Stage;
@@ -23,6 +24,8 @@ import net.kingingo.server.utils.Utils;
 public class GameStage extends Stage{
 	
 	private ArrayList<Game> games = new ArrayList<>();
+	public ScissorsStonePaper drawnGame;
+	public boolean next_game_drawnGame = false;
 	public Game current;
 	@Getter
 	public User win;
@@ -61,14 +64,17 @@ public class GameStage extends Stage{
 				
 				//Falls list == NULL -> UNENTSCHIEDEN
 				if(list==null) {
-					System.out.println("NULL GAMEEND");
 					game_stage.win = null;
 					game_stage.lose = null;
+					printf("Nobody won the game so we start the drawn Game! ScissorsStonePaper... lets go");
+					
+					game_stage.next_game_drawnGame=true;
+					Stage.jump(GameStage.class);
 				} else {
 					game_stage.win = list[0];
 					game_stage.lose = list[1];
+					Stage.next();
 				}
-				Stage.next();
 			}
 		};
 		
@@ -76,6 +82,7 @@ public class GameStage extends Stage{
 		this.games.add(new PingPong(end));
 		this.games.add(new Ladder(end));
 		this.games.add(new BlackOrRed(end));
+		this.drawnGame = new ScissorsStonePaper(end);
 	}
 	
 	public boolean drawn() {
@@ -106,15 +113,21 @@ public class GameStage extends Stage{
 		super.start();
 		this.win = null;
 		this.lose = null;
-//		this.current = randomGame();
-		if(i >= this.games.size())i=0;
-		
-		this.current = this.games.get(i);
-		i++;
-		this.current.start(getUser1(),getUser2());
 		
 		setCountdown("game ends in");
-		printf("start Game!");
-		//START GAME
+		if(this.next_game_drawnGame) {
+			this.next_game_drawnGame = false;
+			this.current = this.drawnGame;
+			this.current.start(getUser1(), getUser2());
+			printf("start Drawn Game!");
+		} else {
+//			this.current = randomGame();
+			if(i >= this.games.size())i=0;
+			
+			this.current = this.games.get(i);
+			i++;
+			this.current.start(getUser1(),getUser2());
+			printf("start Game!");
+		}
 	}
 }

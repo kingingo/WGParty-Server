@@ -51,6 +51,11 @@ public class TestCommand implements CommandExecutor{
 			Stage.get(GameStage.class).i = i;
 			Main.printf("Set Game Position "+i);
 			break;
+		case "SETSSP":
+			int ssp = Integer.valueOf(args[1]);
+			Stage.get(GameStage.class).drawnGame.time_in_sec = ssp * 60;
+			Main.printf("SSP Time: "+ssp+"min");
+			break;
 		case "THREADS":
 			Thread.getAllStackTraces().keySet().forEach((t) -> Main.printf(t.getName() + " Daemon:" + t.isDaemon() + " Alive:" + t.isAlive()));
 			break;

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import com.google.common.base.Throwables;
 import com.mysql.cj.util.Util;
 
 import lombok.Getter;
@@ -131,32 +132,38 @@ public abstract class Stage implements Runnable, EventListener{
 			Main.debug("Stage is changing!");
 			return true;
 		}
+		
+		Main.debug("lock stage Stacktrace: "+Throwables.getStackTraceAsString ( new Exception() ));
 		Stage.status = CHANGING_STAGE;
 		return false;
 	}
 	
 	private static void unlock() {
+		Main.debug("unlock stage Stacktrace: "+Throwables.getStackTraceAsString ( new Exception() ));
 		Stage.status = RUNNING;
 	}
 	
 	public static <T extends Stage> T jump(Class<T> clazz) {
-		if(lock())return null;
+		if(lock()) {
+			Main.debug("locked() Stacktrace: "+Throwables.getStackTraceAsString ( new Exception() ));
+			return null;
+		}
 		try {
 			T stage = (T) stages.get(clazz);
-			Main.printf("JUMP-STAGE", currentStage()+" jump to "+stage);
+			Main.printf("§a","JUMP-STAGE", currentStage()+" jump to "+stage);
 			if(currentStage>=0) {
 				currentStage().stop();
 			}
 			int index = 0;
 			for(Class<? extends Stage> c : stages_order) {
-				Main.printf("JUMP", c.getSimpleName()+" "+index);
+				Main.printf("§a","JUMP", c.getSimpleName()+" "+index);
 				if(c == clazz)break;
 				index++;
 			}
 			
 			currentStage=index;
 			stage.start();
-			Main.printf("JUMP-STAGE", "Start "+stage+" stage:"+index);
+			Main.printf("§a","JUMP-STAGE", "Start "+stage+" stage:"+index);
 			return stage;
 		}finally{
 			unlock();

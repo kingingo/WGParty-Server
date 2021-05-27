@@ -25,6 +25,13 @@ public class BlackOrRed extends Game{
 	public BlackOrRed(Callback<User[]> endCallback) {
 		super(endCallback);
 		loadDeck();
+		this.cards = this.randCards(5);
+	}
+	
+	public void end() {
+		super.end();
+		//Refreah for next round
+		this.cards = this.randCards(5);
 	}
 	
 	private void loadDeck() {
@@ -52,7 +59,6 @@ public class BlackOrRed extends Game{
 	
 	public void start(User u1, User u2) {
 		super.start(u1, u2);
-		this.cards = this.randCards(5);
 		this.user1_choose=new int[3];
 		this.user2_choose=new int[3];
 		
@@ -66,6 +72,8 @@ public class BlackOrRed extends Game{
 	}
 	
 	private boolean isDone() {
+		if(!isActive())return false;
+		
 		for(int c : user1_choose)
 			if(c==0)return false;
 

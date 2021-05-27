@@ -64,6 +64,8 @@ public abstract class Game implements EventListener{
 	}
 	
 	public void end() {
+		if(!this.active)return;
+		this.active=false;
 		User win = null;
 		User lose = null;
 		
@@ -79,10 +81,15 @@ public abstract class Game implements EventListener{
 		}
 		print("END -> win:"+win+" lose:"+lose);
 		
-		end(win,lose);
+		end(win,lose,true);
 	}
 	
 	public void end(User win, User lose) {
+		end(win,lose,false);
+	}
+	
+	public void end(User win, User lose,boolean force) {
+		if(!this.active && !force)return;
 		this.active=false;
 		this.user1_done=false;
 		this.user2_done=false;
@@ -112,5 +119,9 @@ public abstract class Game implements EventListener{
 	
 	public void print(String msg) {
 		Main.printf("d",getName(), msg);
+	}
+	
+	public Boolean[] isUser(User u) {
+		return new Boolean[] { u.equals(getUser1()), u.equals(getUser2()) };
 	}
 }
