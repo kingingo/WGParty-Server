@@ -1,25 +1,24 @@
-package net.kingingo.server.packets.client.pingpong;
+package net.kingingo.server.packets.server.pingpong2;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
+import net.kingingo.server.games.PingPong.PingPong;
 import net.kingingo.server.packets.Packet;
 
-public class PingPongResetPacket extends Packet{
+public class PingPongStartPacket extends Packet{
 	
 	public long start;
 	
-	public PingPongResetPacket() {}
+	public PingPongStartPacket() {}
 	
-	public PingPongResetPacket(long start) {
+	public PingPongStartPacket(long start) {
 		this.start = start;
 	}
 	
 	@Override
-	public void parseFromInput(DataInputStream in) throws IOException {
-		this.start = (long) in.readDouble();
-	}
+	public void parseFromInput(DataInputStream in) throws IOException {}
 
 	@Override
 	public void writeToOutput(DataOutputStream out) throws IOException {

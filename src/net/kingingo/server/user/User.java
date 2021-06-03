@@ -128,6 +128,9 @@ public class User {
 	@Getter
 	@Setter
 	private boolean spectate = false;
+	@Getter
+	@Setter
+	private boolean mobile = true;
 	
 	public User(WebSocket webSocket) {
 		this.connectId = CONNECT_COUNTER++;
@@ -258,6 +261,7 @@ public class User {
 			Main.debug("User already loaded "+found.toString());
 			remove();
 			found.setSpectate(true);
+			found.setMobile(packet.isMobile());
 			found.setSocket(this.socket);
 			found.write(new HandshakeAckPacket(found.getName(), true));
 			found.setState(packet.getState());
@@ -269,6 +273,7 @@ public class User {
 		Main.debug("Loading User "+toString());
 
 		final User user = this;
+		user.setMobile(packet.isMobile());
 		MySQL.asyncQuery("SELECT * FROM users WHERE uuid='" + this.uuid.toString() + "';", new Callback<ResultSet>() {
 
 			@Override
@@ -316,6 +321,8 @@ public class User {
 			builder.append("	state: " + getState().name() + (isOnline()?"":" since "+getOffline()+"ms")+"\n");
 			builder.append("	time difference: "+this.timeDifference+"\n");
 			builder.append("	RTT: "+getRTT()+"\n");
+			builder.append("	Spectate: "+isSpectate()+"\n");
+			builder.append("	Mobile: "+isMobile()+"\n");
 		}
 		builder.append(getStats().toString()+"\n");
 		

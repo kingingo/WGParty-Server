@@ -14,6 +14,8 @@ public class HandshakePacket extends Packet{
 	public UUID uuid;
 	@Getter
 	public State state;
+	@Getter
+	public boolean mobile;
 	
 	public HandshakePacket() {}
 	
@@ -21,12 +23,13 @@ public class HandshakePacket extends Packet{
 	public void parseFromInput(DataInputStream in) throws IOException {
 		this.uuid=UUID.fromString(in.readUTF());
 		this.state=State.values()[in.readInt()];
+		this.mobile=in.readBoolean();
 	}
 
 	@Override
 	public void writeToOutput(DataOutputStream out) throws IOException {}
 	
 	public String toString() {
-		return this.getPacketName() + " uuid:"+uuid+" state:"+state.name();
+		return this.getPacketName() + " uuid:"+uuid+" state:"+state.name()+" mobile:"+this.mobile;
 	}
 }

@@ -1,5 +1,7 @@
 package net.kingingo.server;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.UUID;
 
 import net.kingingo.server.event.EventHandler;
@@ -13,17 +15,19 @@ import net.kingingo.server.event.events.PacketReceiveEvent;
 import net.kingingo.server.event.events.PacketSendEvent;
 import net.kingingo.server.event.events.StateChangeEvent;
 import net.kingingo.server.event.events.UserLoggedInEvent;
+import net.kingingo.server.packets.Packet;
 import net.kingingo.server.packets.client.HandshakePacket;
 import net.kingingo.server.packets.client.PongPacket;
 import net.kingingo.server.packets.client.RegisterPacket;
 import net.kingingo.server.packets.client.SpectatePacket;
 import net.kingingo.server.packets.client.StatsPacket;
-import net.kingingo.server.packets.client.pingpong.PingPongUserPacket;
 import net.kingingo.server.packets.server.IdsPacket;
 import net.kingingo.server.packets.server.PingPacket;
 import net.kingingo.server.packets.server.RegisterAckPacket;
 import net.kingingo.server.packets.server.SetMatchPacket;
 import net.kingingo.server.packets.server.StatsAckPacket;
+import net.kingingo.server.packets.server.pingpong2.PingPongBallPacket;
+import net.kingingo.server.packets.server.pingpong2.PingPongPlayerPacket;
 import net.kingingo.server.stage.Stage;
 import net.kingingo.server.stage.stages.PlayerChoose;
 import net.kingingo.server.user.State;
@@ -101,18 +105,25 @@ public class UserListener implements EventListener{
 			}
 		}
 	}
+	
+	public static final ArrayList<Class<? extends Packet>> BLACK_LIST = new ArrayList<>(Arrays.asList(PingPacket.class,PongPacket.class, PingPongPlayerPacket.class, PingPongBallPacket.class));
+	private static boolean containsBlacklist(Packet packet) {
+		for(Class<? extends Packet> clazz : BLACK_LIST) {
+			if(clazz.isInstance(packet))
+				return true;
+		}
+		return false;
+	}
 
 	@EventHandler(priority=EventPriority.HIGHEST)
 	public void recm(PacketReceiveEvent ev) {
-		if(!(ev.getPacket() instanceof PongPacket) 
-				&& !(ev.getPacket() instanceof PingPongUserPacket))
+		if(!containsBlacklist(ev.getPacket()))
 			Main.printf("SERVER <= "+ ( ev.getUser() == null ? "USER IS NULL?!" : ev.getUser()) +" ["+(ev.getPacket() == null ? "PACKET IS NULL?!" : ev.getPacket())+"]");
 	}
 	
 	@EventHandler(priority=EventPriority.HIGHEST)
 	public void send(PacketSendEvent ev) {
-		if(!(ev.getPacket() instanceof PingPacket) 
-				&& !(ev.getPacket() instanceof PingPongUserPacket)) {
+		if(!containsBlacklist(ev.getPacket())) {
 			Main.printf("SERVER => "+ ( ev.getUser() == null ? "USER IS NULL?!" : ev.getUser()) +" ["+(ev.getPacket() == null ? "PACKET IS NULL?!" : ev.getPacket())+"]");
 		}
 	}

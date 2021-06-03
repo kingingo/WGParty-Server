@@ -11,6 +11,7 @@ import net.kingingo.server.games.BlackOrRed.BlackOrRed;
 import net.kingingo.server.games.HigherLower.HigherLower;
 import net.kingingo.server.games.Ladder.Ladder;
 import net.kingingo.server.games.PingPong.PingPong;
+import net.kingingo.server.games.PingPong.PingPong;
 import net.kingingo.server.games.ScissorsStonePaper.ScissorsStonePaper;
 import net.kingingo.server.packets.client.games.GameStartAckPacket;
 import net.kingingo.server.packets.server.ToggleStagePacket;
@@ -114,6 +115,7 @@ public class GameStage extends Stage{
 		this.win = null;
 		this.lose = null;
 		
+		printf("next_game_drawnGame: "+this.next_game_drawnGame);
 		setCountdown("game ends in");
 		if(this.next_game_drawnGame) {
 			this.next_game_drawnGame = false;
