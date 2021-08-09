@@ -6,6 +6,7 @@ import net.kingingo.server.Main;
 import net.kingingo.server.event.EventHandler;
 import net.kingingo.server.event.events.PacketReceiveEvent;
 import net.kingingo.server.games.Game;
+import net.kingingo.server.packets.client.games.GameStartAckPacket;
 import net.kingingo.server.packets.client.ladder.LadderClickPacket;
 import net.kingingo.server.stage.Stage;
 import net.kingingo.server.user.User;
@@ -53,6 +54,13 @@ public class Ladder extends Game{
 					if(this.user1_done && this.user2_done) {
 						end();
 					}
+				}
+			} else {
+				if(ev.getPacket() instanceof GameStartAckPacket) {
+					 if(this.user1_details!=null)
+						 ev.getUser().write(this.user1_details);
+					 if(this.user2_details!=null)
+						 ev.getUser().write(this.user2_details);
 				}
 			}
 		}

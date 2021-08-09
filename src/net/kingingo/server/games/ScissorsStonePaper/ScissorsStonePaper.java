@@ -63,12 +63,13 @@ public class ScissorsStonePaper extends Game{
 				
 				User.broadcast(new SSPChoosePacket(chooses[i],(i==0?getUser1():getUser2())), State.INGAME);
 			}
+//			Main.debug
 		}
 	}
 	
 	public void end(User win, User lose) {
 		super.end(win,lose);
-		
+		Stage.get(GameStage.class).next_game_drawnGame  = false;
 		this.timer.cancel();
 	}
 	

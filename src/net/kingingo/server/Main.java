@@ -14,6 +14,17 @@ import net.kingingo.server.user.User;
 import net.kingingo.server.user.UserStats;
 import net.kingingo.server.utils.TimeSpan;
 
+/**
+ * @author obena
+ *
+ * Powershell CMDS:
+ * weinre --boundHost 192.168.178.110 --httpPort 8888
+ * 
+ * TO-DO:
+ * 
+ * 
+ */
+
 public class Main {
 	@Getter
 	public static WSocketServer server;
