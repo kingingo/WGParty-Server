@@ -29,8 +29,8 @@ public class Main {
 //	public static final String WEBSERVER_PATH = "C:"+File.separatorChar+"Users"+File.separatorChar+"darouser"+File.separatorChar+"git"+File.separatorChar+"wgparty"+File.separatorChar+"WGParty"+File.separatorChar+"src";
 	public static final int DEFAULT_PORT = 8887;
 	public static final int PING_TIME = 10; //secs
-	private static UserListener listener;
-	private static PingThread pingThread;
+	public static UserListener listener = null;
+	public static PingThread pingThread = null;
 	
 	public static void registerCommands() {
 		Terminal.getInstance();

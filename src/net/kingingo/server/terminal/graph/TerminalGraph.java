@@ -2,7 +2,6 @@ package net.kingingo.server.terminal.graph;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
@@ -11,6 +10,7 @@ import java.util.TreeSet;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.math3.analysis.interpolation.SplineInterpolator;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -19,7 +19,7 @@ import lombok.experimental.NonFinal;
 import net.kingingo.server.terminal.colors.ColoredChar;
 import net.kingingo.server.terminal.colors.ColoredString;
 import net.md_5.bungee.api.ChatColor;
-@SuppressWarnings("deprecated")
+@SuppressWarnings("deprecation")
 public class TerminalGraph {
 	@AllArgsConstructor
 	@Getter

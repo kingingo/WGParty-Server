@@ -42,6 +42,7 @@ public class TerminalTable {
 		private Align align;
 	}
 	
+	@SuppressWarnings("unchecked")
 	public static class TerminalRow {
 		@Getter
 		private List<String>[] columns;
