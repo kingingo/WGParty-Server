@@ -1,6 +1,5 @@
 package net.kingingo.server.terminal.commands;
 
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
@@ -19,7 +18,7 @@ public class StopCommand implements CommandExecutor{
 	public void onCommand(String[] args) {
 		try {
 			if(Main.server!=null)Main.server.stop();
-		} catch (IOException | InterruptedException e) {
+		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
 		
