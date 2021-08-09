@@ -1,5 +1,6 @@
 package net.kingingo.server.terminal;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -45,7 +46,7 @@ public class Terminal implements Runnable{
 		System.setErr(new CostumSystemPrintStream(){
 			@Override
 			public void write(String message) {
-				Terminal.this.write("§c[ERROR] §6"+message);
+				Terminal.this.write("ï¿½c[ERROR] ï¿½6"+message);
 			}
 		});
 		try {
@@ -80,10 +81,18 @@ public class Terminal implements Runnable{
 		
 		for ( Class<? extends CommandExecutor> clazz : moduleClasses ){
 			try {
-				register(clazz.newInstance());
+				register(clazz.getDeclaredConstructor().newInstance());
 			} catch (InstantiationException e) {
 				e.printStackTrace();
 			} catch (IllegalAccessException e) {
+				e.printStackTrace();
+			} catch (IllegalArgumentException e) {
+				e.printStackTrace();
+			} catch (InvocationTargetException e) {
+				e.printStackTrace();
+			} catch (NoSuchMethodException e) {
+				e.printStackTrace();
+			} catch (SecurityException e) {
 				e.printStackTrace();
 			}
 		}
@@ -123,7 +132,7 @@ public class Terminal implements Runnable{
 
 	private String getPromt() {
 		String prefix = "";
-		prefix += "§a> §o";
+		prefix += "Â§a> Â§o";
 		return prefix;
 	}
 	
@@ -191,7 +200,7 @@ public class Terminal implements Runnable{
 					}catch(Exception exx){
 						exx.printStackTrace();
 					}
-					write("§cHard buffer reset!");
+					write("Â§cHard buffer reset!");
 				}
 			}
 			

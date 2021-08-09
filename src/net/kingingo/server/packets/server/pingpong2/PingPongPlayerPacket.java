@@ -3,7 +3,6 @@ package net.kingingo.server.packets.server.pingpong2;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.util.UUID;
 
 import net.kingingo.server.games.PingPong.PingPong;
 import net.kingingo.server.games.PingPong.PingPong.Player;

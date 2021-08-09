@@ -7,7 +7,6 @@ import java.util.HashMap;
 
 import lombok.Getter;
 import lombok.Setter;
-import net.kingingo.server.Main;
 import net.kingingo.server.packets.Packet;
 import net.kingingo.server.user.User;
 import net.kingingo.server.user.UserStats;
@@ -28,8 +27,9 @@ public class StatsAckPacket extends Packet{
 		this.stats.put(user, stat);
 	}
 	
+	@SuppressWarnings("unchecked")
 	public StatsAckPacket(HashMap<User, UserStats> stats) {
-		this.stats=(HashMap<User, UserStats>)stats.clone();
+		  this.stats = (HashMap<User, UserStats>)stats.clone();
 	}
 	
 	@Override

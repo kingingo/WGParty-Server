@@ -13,8 +13,6 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.remote.RemoteWebDriver;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -84,8 +82,8 @@ public class Search {
 	    driver.get("https://www.google.com/search?q="+request+"&tbm=isch");
 
 	    // wait until the google page shows the result
-	    WebElement myDynamicElement = (new WebDriverWait(driver, 10))
-	              .until(ExpectedConditions.presenceOfElementLocated(By.className("rg_i")));
+	   /*  WebElement myDynamicElement = (new WebDriverWait(driver, 10)) 
+	              .until(ExpectedConditions.presenceOfElementLocated(By. className("rg_i"))); */
     	
 	    List<WebElement> findElements = driver.findElements(By.className("rg_i"));
     	Main.printf("findImage", "Found "+findElements.size()+" pictures to "+request);

@@ -3,7 +3,6 @@ package net.kingingo.server.games.PingPong;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.util.UUID;
 
 import net.kingingo.server.Main;
 import net.kingingo.server.event.EventHandler;
@@ -23,9 +22,9 @@ import net.kingingo.server.utils.TimeSpan;
  * TO-DO
  * 
  * MOBILE:
- * 	PADDLE bewegt sich nicht: vermutlich wird die Y koordinate nicht richtig zu den clients übertragen...
- *  nachrichten sind schon eingebaut -> ausführen und gucken 
- *  viel Spaß FELIX :)
+ * 	PADDLE bewegt sich nicht: vermutlich wird die Y koordinate nicht richtig zu den clients ï¿½bertragen...
+ *  nachrichten sind schon eingebaut -> ausfï¿½hren und gucken 
+ *  viel Spaï¿½ FELIX :)
  * 
  * 
  */
@@ -77,7 +76,7 @@ public class PingPong extends Game implements Runnable{
 					player.upPressed = packet.player.upPressed;
 					player.downPressed = packet.player.downPressed;
 				}else {
-					Main.printf("§e", "PINGPONG_PLAYER_PACKET", "MOBILE "+player.user.getName()+" newY="+packet.player.y);
+					Main.printf("ï¿½e", "PINGPONG_PLAYER_PACKET", "MOBILE "+player.user.getName()+" newY="+packet.player.y);
 					player.newY = packet.player.y;
 				}
 			}
@@ -147,7 +146,7 @@ public class PingPong extends Game implements Runnable{
 	private void updatePaddle(Player player) {
 		if(player.user.isMobile()) {
 			if(player.newY != -1) {
-				Main.printf("§e", "updatePaddle", "MOBILE "+player.user.getName()+" Y="+player.y+" to "+player.newY);
+				Main.printf("ï¿½e", "updatePaddle", "MOBILE "+player.user.getName()+" Y="+player.y+" to "+player.newY);
 				player.y = player.newY;
 				player.newY=-1;
 			}

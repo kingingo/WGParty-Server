@@ -19,7 +19,7 @@ import lombok.experimental.NonFinal;
 import net.kingingo.server.terminal.colors.ColoredChar;
 import net.kingingo.server.terminal.colors.ColoredString;
 import net.md_5.bungee.api.ChatColor;
-
+@SuppressWarnings("deprecated")
 public class TerminalGraph {
 	@AllArgsConstructor
 	@Getter

@@ -9,7 +9,6 @@ import net.kingingo.server.packets.server.ReadyPacket;
 import net.kingingo.server.packets.server.ToggleStagePacket;
 import net.kingingo.server.packets.server.games.PlayerReadyAckPacket;
 import net.kingingo.server.stage.Stage;
-import net.kingingo.server.user.State;
 import net.kingingo.server.user.User;
 import net.kingingo.server.utils.TimeSpan;
 

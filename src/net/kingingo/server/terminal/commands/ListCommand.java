@@ -1,14 +1,8 @@
 package net.kingingo.server.terminal.commands;
 
-import java.util.HashMap;
-import java.util.Set;
-
 import net.kingingo.server.Main;
 import net.kingingo.server.terminal.CommandExecutor;
 import net.kingingo.server.user.User;
-import net.kingingo.server.user.UserStats;
-
-import org.java_websocket.WebSocket;
 
 public class ListCommand implements CommandExecutor{
 

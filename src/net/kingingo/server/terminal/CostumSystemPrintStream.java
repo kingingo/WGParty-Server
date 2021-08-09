@@ -7,12 +7,9 @@ import java.util.Arrays;
 import java.util.Locale;
 
 import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.ObjectUtils;
 
 import lombok.NonNull;
-import net.kingingo.server.Main;
 
-@SuppressWarnings("deprecation")
 public class CostumSystemPrintStream extends PrintStream {
 
 	String buffer;
@@ -64,7 +61,7 @@ public class CostumSystemPrintStream extends PrintStream {
 
 	@Override
 	public void write(@NonNull byte[] buf, int off, int len) {
-		write("§cWritebyte: " + Arrays.toString(ArrayUtils.subarray(buf, off, off + len)));
+		write("ï¿½cWritebyte: " + Arrays.toString(ArrayUtils.subarray(buf, off, off + len)));
 	}
 
 	@Override
@@ -154,12 +151,12 @@ public class CostumSystemPrintStream extends PrintStream {
 
 	@Override
 	public void println(String x) {
-		write(Debugger.getLastCallerClass() + "§f" + ObjectUtils.toString(x));
+		write(Debugger.getLastCallerClass() + "Â§f" + x == null ? "NULL" : x.toString());
 	}
 
 	@Override
 	public void println(Object x) {
-		write(ObjectUtils.toString(x));
+		write(x == null ? "NULL" : x.toString());
 	}
 
 	@Override
@@ -188,19 +185,19 @@ public class CostumSystemPrintStream extends PrintStream {
 
 	@Override
 	public PrintStream append(CharSequence csq) {
-		write("§cAppend: " + csq);
+		write("ï¿½cAppend: " + csq);
 		return this;
 	}
 
 	@Override
 	public PrintStream append(CharSequence csq, int start, int end) {
-		write("§cAppend: " + csq);
+		write("ï¿½cAppend: " + csq);
 		return this;
 	}
 
 	@Override
 	public PrintStream append(char c) {
-		write("§cAppend: " + c);
+		write("ï¿½cAppend: " + c);
 		return this;
 	}
 

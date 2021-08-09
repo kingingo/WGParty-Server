@@ -2,9 +2,7 @@ package net.kingingo.server.stage.stages;
 
 import net.kingingo.server.Main;
 import net.kingingo.server.event.EventHandler;
-import net.kingingo.server.event.events.PacketReceiveEvent;
 import net.kingingo.server.event.events.PacketSendEvent;
-import net.kingingo.server.packets.client.CountdownPacket;
 import net.kingingo.server.packets.server.CountdownAckPacket;
 import net.kingingo.server.packets.server.ToggleStagePacket;
 import net.kingingo.server.stage.Stage;

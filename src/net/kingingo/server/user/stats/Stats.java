@@ -50,7 +50,7 @@ public class Stats<T> implements Serializable{
 //		}
 //	}
 	
-	public <T> void writeToOutput(DataOutputStream out) throws IOException {
+	public /*<T>*/ void writeToOutput(DataOutputStream out) throws IOException {
 		out.writeUTF(this.key);
 //		byte[] b = serialize(this.value);
 //		out.write(b.length);
@@ -81,6 +81,7 @@ public class Stats<T> implements Serializable{
         }
     }
 	
+	@SuppressWarnings("unchecked")
 	public static <T> Stats<T> deserializeStat(byte[] bytes) throws ClassNotFoundException, IOException {
 		return (Stats<T>) deserialize(bytes);
 	}

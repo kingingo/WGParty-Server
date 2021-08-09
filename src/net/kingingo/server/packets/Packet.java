@@ -5,6 +5,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -40,7 +41,7 @@ public abstract class Packet implements IData{
 		for ( Class<? extends Packet> clazz : moduleClasses ){
 			if(clazz == UnknownPacket.class)continue;
 			try {
-				Packet instance = clazz.newInstance();
+				Packet instance = clazz.getDeclaredConstructor().newInstance();
 				packet_ids.put(instance.getPacketName(), (clazz == IdsPacket.class ? 0 : id));
 				packets.put((clazz == IdsPacket.class ? 0 : id), clazz);
 				id++;
@@ -48,6 +49,14 @@ public abstract class Packet implements IData{
 				e.printStackTrace();
 			} catch (IllegalAccessException e) {
 					e.printStackTrace();
+			} catch (IllegalArgumentException e) {
+				e.printStackTrace();
+			} catch (InvocationTargetException e) {
+				e.printStackTrace();
+			} catch (NoSuchMethodException e) {
+				e.printStackTrace();
+			} catch (SecurityException e) {
+				e.printStackTrace();
 			}
 			
 		}
@@ -125,7 +134,7 @@ public abstract class Packet implements IData{
 	
 	public static <T extends Packet> T create(Class<T> clazz, DataInputStream in) {
 		try {
-			T packet = (T) clazz.newInstance();
+			T packet = (T) clazz.getDeclaredConstructor().newInstance();
 			packet.parseFromInput(in);
 			
 			return (T) packet;
@@ -134,6 +143,14 @@ public abstract class Packet implements IData{
 		} catch (IllegalAccessException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (IllegalArgumentException e) {
+			e.printStackTrace();
+		} catch (InvocationTargetException e) {
+			e.printStackTrace();
+		} catch (NoSuchMethodException e) {
+			e.printStackTrace();
+		} catch (SecurityException e) {
 			e.printStackTrace();
 		}
 		throw new NullPointerException();
@@ -176,7 +193,7 @@ public abstract class Packet implements IData{
 //	}
 	
 	public int getId() {
-		return this.packet_ids.get(getPacketName());
+		return Packet.packet_ids.get(getPacketName());
 	}
 	
 	public String getPacketName(){

@@ -121,7 +121,7 @@ public class HigherLower extends Game{
 	
 	public Search[] randSearch(int size) {
 		Search[] search = new Search[size];
-		ArrayList<Search> clone = (ArrayList<Search>) this.searchs.clone();
+		@SuppressWarnings("unchecked") ArrayList<Search> clone = (ArrayList<Search>) this.searchs.clone();
 		
 		for(int i = 0; i < size; i++) {
 			search[i] = clone.get(Utils.randInt(0, clone.size()-1));

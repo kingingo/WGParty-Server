@@ -1,7 +1,5 @@
 package net.kingingo.server.games.ScissorsStonePaper;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -39,7 +37,7 @@ public class ScissorsStonePaper extends Game{
 				
 				for(int i = 0; i < 2; i++) {
 					if(is[i]) {
-						//Wenn die startzeit noch nicht abgelaufen ist wird es geändert
+						//Wenn die startzeit noch nicht abgelaufen ist wird es geï¿½ndert
 						if((System.currentTimeMillis()+TimeSpan.HALF_SECOND/4) < this.start) {
 							chooses[i] = ev.getPacket(SSPChoosePacket.class).getChoose();
 						}
@@ -52,10 +50,10 @@ public class ScissorsStonePaper extends Game{
 		}
 	}
 	
-	//Wird ausgeführt sobald der Timer abgelaufen ist.
+	//Wird ausgefï¿½hrt sobald der Timer abgelaufen ist.
 	public void run() {
 		if(isActive()) {
-			//Sendet was ausgewählt wurde!
+			//Sendet was ausgewï¿½hlt wurde!
 			for(int i = 0; i < 2; i++) {
 				if(chooses[i]==null) {
 					chooses[i] = Choose.values()[Utils.randInt(0, 2)];

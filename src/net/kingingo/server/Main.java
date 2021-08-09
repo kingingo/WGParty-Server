@@ -1,9 +1,6 @@
 package net.kingingo.server;
 
 import java.io.File;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-
 import lombok.Getter;
 import net.kingingo.server.mysql.MySQL;
 import net.kingingo.server.packets.Packet;
@@ -99,7 +96,7 @@ public class Main {
 	}
 	
 	public static void printf(String color , String prefix, String msg) {
-		System.out.println("§"+color+"["+prefix+"]:§f "+msg);
+		System.out.println("ï¿½"+color+"["+prefix+"]:ï¿½f "+msg);
 	}
 	
 	public static void printf(String msg) {

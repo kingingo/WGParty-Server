@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 
 import com.google.common.base.Throwables;
-import com.mysql.cj.util.Util;
 
 import lombok.Getter;
 import net.kingingo.server.Main;
@@ -109,16 +108,18 @@ public abstract class Stage implements Runnable, EventListener{
 	public static boolean inGame() {
 		return !(currentStage() instanceof Countdown);
 	}
-	
+
+	@SuppressWarnings("unchecked")
 	public static <T extends Stage> T get(int index) {
 		int i = 0;
 		for(Class<? extends Stage> clazz : stages_order) {
-			if(index == i)return (T) Stage.get(clazz);
+			if(index == i)return  (T) Stage.get(clazz);
 			i++;
 		}
 		return null;
 	}
-	
+
+	@SuppressWarnings("unchecked")
 	public static <T extends Stage> T get(Class<T> clazz) {
 		return (T) stages.get(clazz);
 	}
@@ -149,21 +150,21 @@ public abstract class Stage implements Runnable, EventListener{
 			return null;
 		}
 		try {
-			T stage = (T) stages.get(clazz);
-			Main.printf("§a","JUMP-STAGE", currentStage()+" jump to "+stage);
+			@SuppressWarnings("unchecked") T stage = (T) stages.get(clazz);
+			Main.printf("Â§a","JUMP-STAGE", currentStage()+" jump to "+stage);
 			if(currentStage>=0) {
 				currentStage().stop();
 			}
 			int index = 0;
 			for(Class<? extends Stage> c : stages_order) {
-				Main.printf("§a","JUMP", c.getSimpleName()+" "+index);
+				Main.printf("Â§a","JUMP", c.getSimpleName()+" "+index);
 				if(c == clazz)break;
 				index++;
 			}
 			
 			currentStage=index;
 			stage.start();
-			Main.printf("§a","JUMP-STAGE", "Start "+stage+" stage:"+index);
+			Main.printf("Â§a","JUMP-STAGE", "Start "+stage+" stage:"+index);
 			return stage;
 		}finally{
 			unlock();

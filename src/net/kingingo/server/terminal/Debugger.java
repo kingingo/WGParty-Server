@@ -3,8 +3,6 @@ package net.kingingo.server.terminal;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
-import com.sun.tools.javac.launcher.Main;
-
 import net.kingingo.server.games.Game;
 import net.kingingo.server.stage.Stage;
 
@@ -26,12 +24,12 @@ public class Debugger {
 					&& !current.getClassName().contains("net.kingingo.server.terminal.")) {
 				
 				try {
-					return "ง7["+date()+"|"+ Class.forName(current.getClassName()).getSimpleName() + ":" + current.getLineNumber()+"]";
+					return "ยง7["+date()+"|"+ Class.forName(current.getClassName()).getSimpleName() + ":" + current.getLineNumber()+"]";
 				} catch (ClassNotFoundException e) {
-					return "ง7["+date()+"|"+ current.getClass().getSimpleName() + ":" + current.getLineNumber()+"]";
+					return "ยง7["+date()+"|"+ current.getClass().getSimpleName() + ":" + current.getLineNumber()+"]";
 				}
 			}
 		}
-		return "ง7["+date()+"| unknown:-1]";
+		return "ยง7["+date()+"| unknown:-1]";
 	}
 }

@@ -19,7 +19,7 @@ public class EventManager {
 	public static ArrayList<EventListener> registered = new ArrayList<>();
 	
 	//unregestiert die Class
-		public static boolean unregister(Class c){
+		public static boolean unregister(Class<?> c){
 			EventListener listener;
 			for(int i = 0; i<registered.size(); i++)
 				if( (listener=((EventListener) registered.get(i))).getClass().equals(c)){

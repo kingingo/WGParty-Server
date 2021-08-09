@@ -3,8 +3,6 @@ package net.kingingo.server.packets.server;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
 
 import net.kingingo.server.packets.Packet;
 import net.kingingo.server.user.User;

@@ -4,7 +4,6 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
-import net.kingingo.server.games.PingPong.PingPong;
 import net.kingingo.server.packets.Packet;
 
 public class PingPongStartPacket extends Packet{

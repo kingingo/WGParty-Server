@@ -80,14 +80,15 @@ public class UserStats {
 	}
 	
 	public boolean getBoolean(String key) {
-		Stats<Boolean> stat = (Stats<Boolean>) getStats(key);
+		 @SuppressWarnings("unchecked") Stats<Boolean> stat = (Stats<Boolean>) getStats(key);
 		
 		if(stat!=null)return stat.getValue();
 		throw new NullPointerException("No entry found for "+key);
 	}
 	
+	
 	public Integer getInt(String key) {
-		Stats<Integer> stat = (Stats<Integer>) getStats(key);
+		@SuppressWarnings("unchecked") Stats<Integer> stat = (Stats<Integer>) getStats(key);
 		
 		if(stat!=null)return stat.getValue();
 		throw new NullPointerException("No entry found for "+key);
@@ -108,7 +109,7 @@ public class UserStats {
 	}
 	
 	private boolean set(String key,boolean create, boolean a) {
-		Stats<Boolean> stat = (Stats<Boolean>) getStats(key);
+		@SuppressWarnings("unchecked") Stats<Boolean> stat = (Stats<Boolean>) getStats(key);
 		
 		if(stat!=null && !create) {
 			stat.setValue(a);
@@ -127,7 +128,7 @@ public class UserStats {
 	}
 	
 	public void add(String key,boolean create, int a) {
-		Stats<Integer> stat = (Stats<Integer>) getStats(key);
+		@SuppressWarnings("unchecked") Stats<Integer> stat = (Stats<Integer>) getStats(key);
 		
 		if(stat!=null) {
 			int value = stat.getValue();

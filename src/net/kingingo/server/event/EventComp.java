@@ -22,6 +22,7 @@ public class EventComp implements Comparable<EventComp>{
 		this.method.invoke(this.listener, new Object[] {event});
 	}
 	
+	@SuppressWarnings("unchecked")
 	public Class<? extends Event> getEventClass() {
 		return (Class<? extends Event>) method.getParameterTypes()[0];
 	}
