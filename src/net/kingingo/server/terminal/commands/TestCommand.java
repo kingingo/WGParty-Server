@@ -26,6 +26,8 @@ import net.kingingo.server.user.UserStats;
 import net.kingingo.server.utils.TimeSpan;
 import net.kingingo.server.utils.Utils;
 import net.kingingo.server.wheel.Wheel;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class TestCommand implements CommandExecutor{
 
@@ -36,6 +38,18 @@ public class TestCommand implements CommandExecutor{
 			return;
 		}
 		switch(args[0].toUpperCase()) {
+		case "TIMER_TEST":
+			Timer timer = new Timer();
+			timer.schedule(new TimerTask(){
+
+				@Override
+				public void run() {
+					Main.printf("5 seconds are over...");
+				}
+				
+			}, 5 * TimeSpan.SECOND);
+			Main.printf("Message comes in 5 secs.");
+		break;
 		case "WIN_SCORE":
 			if(args.length > 1) {
 				int score = Integer.valueOf(args[1]);
@@ -46,12 +60,19 @@ public class TestCommand implements CommandExecutor{
 			break;
 		case "SETGAME":
 			int i = Integer.valueOf(args[1]);
-			Stage.get(GameStage.class).i = i;
-			Main.printf("Set Game Position "+i);
+
+			if(i < 0){
+				Stage.get(GameStage.class).next_game_drawnGame = true;
+				Main.printf("Set Drawn Game SCISSORS STONE PAPER!!");
+			}else{
+				Stage.get(GameStage.class).i = i;
+				Main.printf("Set Game Position "+i);
+			}
 			break;
 		case "SETSSP":
 			int ssp = Integer.valueOf(args[1]);
-			Stage.get(GameStage.class).drawnGame.time_in_sec = ssp * 60;
+			Stage.get(GameStage.class).drawnGame.time_in_sec = ssp;
+			Stage.get(GameStage.class).drawnGame.resetTime();
 			Main.printf("SSP Time: "+ssp+"min");
 			break;
 		case "THREADS":

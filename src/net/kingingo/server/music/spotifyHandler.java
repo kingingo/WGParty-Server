@@ -136,13 +136,10 @@ public class spotifyHandler implements Runnable {
 							Main.printf("	" + img);
 						}
 					} catch (ParseException e1) {
-						// TODO Auto-generated catch block
 						e1.printStackTrace();
 					} catch (SpotifyWebApiException e1) {
-						// TODO Auto-generated catch block
 						e1.printStackTrace();
 					} catch (IOException e1) {
-						// TODO Auto-generated catch block
 						e1.printStackTrace();
 					}
 

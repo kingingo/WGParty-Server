@@ -61,7 +61,7 @@ public class CostumSystemPrintStream extends PrintStream {
 
 	@Override
 	public void write(@NonNull byte[] buf, int off, int len) {
-		write("�cWritebyte: " + Arrays.toString(ArrayUtils.subarray(buf, off, off + len)));
+		write("§cWritebyte: " + Arrays.toString(ArrayUtils.subarray(buf, off, off + len)));
 	}
 
 	@Override
@@ -185,19 +185,19 @@ public class CostumSystemPrintStream extends PrintStream {
 
 	@Override
 	public PrintStream append(CharSequence csq) {
-		write("�cAppend: " + csq);
+		write("§cAppend: " + csq);
 		return this;
 	}
 
 	@Override
 	public PrintStream append(CharSequence csq, int start, int end) {
-		write("�cAppend: " + csq);
+		write("§cAppend: " + csq);
 		return this;
 	}
 
 	@Override
 	public PrintStream append(char c) {
-		write("�cAppend: " + c);
+		write("§cAppend: " + c);
 		return this;
 	}
 

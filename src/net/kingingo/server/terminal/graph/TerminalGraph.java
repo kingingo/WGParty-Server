@@ -129,7 +129,6 @@ public class TerminalGraph {
 				}
 				return new Point(x, SMMOTH_LINE.interpolate(xarray, yarray).value(x));
 			}
-				//throw new RuntimeException(); //TODO
 			Point last = points.floor(new Point(x, -1));
 			
 			Point next = points.ceiling(new Point(x, -1));
@@ -213,7 +212,7 @@ public class TerminalGraph {
 		BigDecimal count = new BigDecimal(startX);
 		for(int i = 1;i<rowFill;i++){
 			for(Graph graph : graths){
-				double y = graph.getPoint(count.doubleValue(), smooth).y; //TODO
+				double y = graph.getPoint(count.doubleValue(), smooth).y; 
 				if(graph.fillBelowUp){
 					if(y >= startY){
 						for(int line = 0;line<lines.length;line++){
@@ -223,7 +222,7 @@ public class TerminalGraph {
 							//else
 							//lines[lines.length-line-1] = replaceChar(lines[lines.length-line-1], startIndex+i, ' ');
 						}
-					} //TODO dont draw
+					} 
 				}
 				else
 				{

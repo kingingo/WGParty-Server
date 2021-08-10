@@ -46,7 +46,7 @@ public class Terminal implements Runnable{
 		System.setErr(new CostumSystemPrintStream(){
 			@Override
 			public void write(String message) {
-				Terminal.this.write("�c[ERROR] �6"+message);
+				Terminal.this.write("§c[ERROR] §6"+message);
 			}
 		});
 		try {

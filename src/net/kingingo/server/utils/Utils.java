@@ -30,7 +30,6 @@ public class Utils {
 			try {
 				resize(new File(path+"original"+File.separatorChar+name+".png"),path+"resize"+File.separatorChar+UUID.nameUUIDFromBytes(name.getBytes()).toString()+".jpg",256,256);
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 	}
@@ -57,7 +56,7 @@ public class Utils {
  
         // scales the input image to the output image
         Graphics2D g2d = outputImage.createGraphics();
-        /** MUSS NICHT BEI JEDEN BILD ROTIERT WERDEN VLT GROEßEM ANHAENGIG!**/
+        /** MUSS NICHT BEI JEDEN BILD ROTIERT WERDEN VLT GROEÂ§EM ANHAENGIG!**/
 //        g2d.rotate(Math.toRadians(90), scaledWidth/2, scaledHeight/2);
         g2d.drawImage(inputImage, 0, 0, scaledWidth, scaledHeight, null);
         g2d.dispose();

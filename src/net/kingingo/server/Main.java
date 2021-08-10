@@ -16,7 +16,8 @@ import net.kingingo.server.utils.TimeSpan;
  *
  * Powershell CMDS:
  * weinre --boundHost 192.168.178.110 --httpPort 8888
- * 
+ * interface -> http://192.168.178.110:8888/client/#anonymous
+ * add to HTML -> <script src="http://192.168.178.110:8888/target/target-script-min.js"></script>
  * TO-DO:
  * 
  * 
@@ -96,7 +97,7 @@ public class Main {
 	}
 	
 	public static void printf(String color , String prefix, String msg) {
-		System.out.println("�"+color+"["+prefix+"]:�f "+msg);
+		System.out.println("§"+color+"["+prefix+"]:§f "+msg);
 	}
 	
 	public static void printf(String msg) {

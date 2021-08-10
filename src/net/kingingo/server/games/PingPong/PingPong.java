@@ -22,9 +22,9 @@ import net.kingingo.server.utils.TimeSpan;
  * TO-DO
  * 
  * MOBILE:
- * 	PADDLE bewegt sich nicht: vermutlich wird die Y koordinate nicht richtig zu den clients �bertragen...
- *  nachrichten sind schon eingebaut -> ausf�hren und gucken 
- *  viel Spa� FELIX :)
+ * 	PADDLE bewegt sich nicht: vermutlich wird die Y koordinate nicht richtig zu den clients §bertragen...
+ *  nachrichten sind schon eingebaut -> ausf§hren und gucken 
+ *  viel Spa§ FELIX :)
  * 
  * 
  */
@@ -76,7 +76,7 @@ public class PingPong extends Game implements Runnable{
 					player.upPressed = packet.player.upPressed;
 					player.downPressed = packet.player.downPressed;
 				}else {
-					Main.printf("�e", "PINGPONG_PLAYER_PACKET", "MOBILE "+player.user.getName()+" newY="+packet.player.y);
+					Main.printf("§e", "PINGPONG_PLAYER_PACKET", "MOBILE "+player.user.getName()+" newY="+packet.player.y);
 					player.newY = packet.player.y;
 				}
 			}
@@ -146,7 +146,7 @@ public class PingPong extends Game implements Runnable{
 	private void updatePaddle(Player player) {
 		if(player.user.isMobile()) {
 			if(player.newY != -1) {
-				Main.printf("�e", "updatePaddle", "MOBILE "+player.user.getName()+" Y="+player.y+" to "+player.newY);
+				Main.printf("§e", "updatePaddle", "MOBILE "+player.user.getName()+" Y="+player.y+" to "+player.newY);
 				player.y = player.newY;
 				player.newY=-1;
 			}

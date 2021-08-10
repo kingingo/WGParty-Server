@@ -93,7 +93,7 @@ public class TerminalTable {
 			System.out.println(ChatColor.stripColor(s));
 	}
 	
-	private static final String columnSeperator = "�r�7 %s �r";
+	private static final String columnSeperator = "§r§7 %s §r";
 	
 	public List<String> buildLines(){
 		ArrayList<String> lines = new ArrayList<>();
@@ -126,7 +126,7 @@ public class TerminalTable {
 			String sep = String.format(columnSeperator, rowSeperator.getSeperator(null, -1, -1, -1));
 			if(first == null)
 				first = sep;
-			line+=sep.replaceAll(" ", "-")+"�7"+StringUtils.leftPad("", i, '-');
+			line+=sep.replaceAll(" ", "-")+"§7"+StringUtils.leftPad("", i, '-');
 		}
 		lines.add(line.substring(first.length()));
 		

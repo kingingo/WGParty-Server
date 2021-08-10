@@ -9,11 +9,17 @@ import net.kingingo.server.packets.Packet;
 public class SSPSettingsPacket extends Packet{
 
 	private long start;
+	private boolean loop_start;
 	
 	public SSPSettingsPacket() {}
 	
 	public SSPSettingsPacket(long start) {
-		this.start=start;
+		this(start,false);
+	}
+
+	public SSPSettingsPacket(long start, boolean loop_start) {
+		this.start = start;
+		this.loop_start = loop_start;
 	}
 	
 	@Override
@@ -22,6 +28,7 @@ public class SSPSettingsPacket extends Packet{
 	@Override
 	public void writeToOutput(DataOutputStream out) throws IOException {
 		out.writeDouble( ((double)this.start) );
+		out.writeBoolean( this.loop_start );
 	}
 
 }
