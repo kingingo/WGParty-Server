@@ -86,14 +86,14 @@ public class GameStage extends Stage{
 		return this.win == null && this.lose == null;
 	}
 	
-	public Game randomGame() {
+public Game randomGame() {
 		return this.games.get(Utils.randInt(0, this.games.size()-1));
 	}
 	
 	public int running() {
 		printf("Game Timeout reached");
 		this.current.end();
-		return Stage.BREAK;
+		return this.current instanceof ScissorsStonePaper ? Stage.NEXT_STAGE : Stage.BREAK;
 	}
 	
 	public void stop() {
@@ -119,7 +119,7 @@ public class GameStage extends Stage{
 			this.current.start(getUser1(), getUser2());
 			printf("start Drawn Game!");
 		} else {
-//			this.current = randomGame();
+			//this.current = randomGame();
 			if(i >= this.games.size())i=0;
 			
 			this.current = this.games.get(i);
