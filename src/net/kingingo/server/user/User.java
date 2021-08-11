@@ -289,6 +289,9 @@ public class User {
 					if (count == 1 && user.getName() != null) {
 						User.uuids.put(user.uuid, user);
 						user.write(new HandshakeAckPacket(user.getName(), true));
+						user.setState(packet.getState());
+						updateStats();
+						EventManager.callEvent(new UserLoggedInEvent(user));
 					} else {
 						user.write(new HandshakeAckPacket(false));
 					}
