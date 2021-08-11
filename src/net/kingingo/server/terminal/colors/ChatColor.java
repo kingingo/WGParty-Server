@@ -36,7 +36,7 @@ public enum ChatColor {
 	
 	private static final Map<ChatColor, String> ANSI_REPLACEMENTS = new EnumMap(ChatColor.class);
 
-	public static final char COLOR_CHAR = 'ง';
+	public static final char COLOR_CHAR = 'ยง';
 
 	public static final String ALL_CODES;
 
@@ -57,7 +57,7 @@ public enum ChatColor {
 	}
 
 	static {
-		STRIP_COLOR_PATTERN = Pattern.compile("(?i)" + String.valueOf('ง') + "[0-9A-FK-OR-Z]");
+		STRIP_COLOR_PATTERN = Pattern.compile("(?i)" + ChatColor.COLOR_CHAR + "[0-9A-FK-OR-Z]");
 
 		BY_CHAR = new HashMap();
 		String temp = "";
@@ -76,7 +76,7 @@ public enum ChatColor {
 		this.code = code;
 		this.name = name;
 		this.ansi_string = ansi;
-		this.toString = new String(new char[] { 'ง', code });
+		this.toString = new String(new char[] { COLOR_CHAR, code });
 	}
 
 	public String toString() {

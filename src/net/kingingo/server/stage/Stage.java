@@ -134,13 +134,13 @@ public abstract class Stage implements Runnable, EventListener{
 			return true;
 		}
 		
-		Main.debug("lock stage Stacktrace: "+Throwables.getStackTraceAsString ( new Exception() ));
+		//Main.debug("lock stage Stacktrace: "+Throwables.getStackTraceAsString ( new Exception() ));
 		Stage.status = CHANGING_STAGE;
 		return false;
 	}
 	
 	private static void unlock() {
-		Main.debug("unlock stage Stacktrace: "+Throwables.getStackTraceAsString ( new Exception() ));
+		//Main.debug("unlock stage Stacktrace: "+Throwables.getStackTraceAsString ( new Exception() ));
 		Stage.status = RUNNING;
 	}
 	

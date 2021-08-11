@@ -25,7 +25,7 @@ public class PingThread implements Runnable, EventListener{
 	@EventHandler
 	public void rec(PacketReceiveEvent ev) {
 		if(ev.getPacket() instanceof PongPacket) {
-			ev.getUser().RTT();
+			ev.getUser().RTT(false);
 		}
 	}
 	
@@ -35,7 +35,7 @@ public class PingThread implements Runnable, EventListener{
 			PingPacket packet = new PingPacket();
 			for(User user : User.getUsers().values()) {
 				if(user.isOnline()) {
-					user.RTT();
+					user.RTT(true);
 					user.write(packet);
 				}
 			}

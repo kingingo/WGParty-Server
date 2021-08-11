@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
@@ -84,6 +85,16 @@ public class User {
 		
 		return u;
 	}
+
+	/**
+	 * @return The size of users who are not tester or spectate!
+	 */
+	public static int getPlayingUsers(){
+		@SuppressWarnings("unchecked") ArrayList<User> list = (ArrayList<User>) stats.clone();
+		list.removeIf( u -> (u.isTester() || u.isSpectate()));
+
+		return list.size();
+	}
 	
 	public static HashMap<User, UserStats> getAllStats(){
 		return stats;
@@ -122,8 +133,9 @@ public class User {
 	@Getter
 	@Setter
 	private long offline=0;
-	
-	private long SampleRTT=0; //Round Trip Time
+
+	//Round Trip Time
+	private long SampleRTT=0; 
 	private long estimatedRTT=0;
 	@Getter
 	@Setter
@@ -138,63 +150,113 @@ public class User {
 		if(webSocket!=null)User.getUsers().put(webSocket, this);
 	} 
 	
+	/**
+	 * @return Time difference between Client and Server (from the Clock) + RTT (=Round Trip Time)
+	 */
 	public long getTimeDifference() {
 		return this.timeDifference+this.SampleRTT;
 	}
 	
+	/**
+	 * Sets a State
+	 * @param state
+	 */
 	public void setState(State state) {
 		StateChangeEvent ev = new StateChangeEvent(this, this.state, state);
 		this.state=state;
 		EventManager.callEvent(ev);
 	}
 	
+	/**
+	 * Is State not offline?
+	 * @return
+	 */
 	public boolean isOnline() {
 		return this.state != State.OFFLINE;
 	}	
 	
+	/**
+	 * Returns the RTT (=Round Trip Time)
+	 * @return RTT
+	 */
 	public long getRTT() {
 		return this.SampleRTT;
 	}
 	
-	public void setTimeDifference(long time) {
-		time -= - getRTT();
+	/**
+	 * Sets Time Differece bewtween Client and Server!
+	 * calc Alg: timeDiff = (1-ALPHA) * diff + ALPHA * timeDiff;
+	 * Alpha = 0.125
+	 * @param diff
+	 */
+	public void setTimeDifference(long diff) {
+		diff += (getRTT()/2);
 		if(!isOnline())return;
 		if(timeDifference == 0) {
-			timeDifference = time;
+			timeDifference = diff;
 		}else {
-			this.timeDifference = (long) ((1-ALPHA) * time + ALPHA * this.timeDifference);
+			this.timeDifference = (long) ((1-ALPHA) * diff + ALPHA * this.timeDifference);
 		}
 	}
 	
-	public void RTT() {
+	/**
+	 * Calculates the RTT (=Round Trip Time) 
+	 * <p>(PING <-> PONG)
+	 * <p>
+	 * <p>calc Alg: 
+	 * <p>
+	 * estimatedRTT = System.currentTimeMillis - estimatedRTT
+	 * RTT =  (1-ALPHA) * estimatedRTT + ALPHA * RTT
+	 * estimatedRTT = 0;
+	 */
+	public void RTT(boolean start) {
 		if(!isOnline())return;
-		if(estimatedRTT==0) {
+		if(estimatedRTT==0 && start) {
 			this.estimatedRTT = System.currentTimeMillis();
-		} else {
+		} else if(!start){
 			this.estimatedRTT = System.currentTimeMillis() - this.estimatedRTT;
 //			Main.debug("Old SampleRTT:"+this.SampleRTT + " estimated RTT:"+this.estimatedRTT);
 			this.SampleRTT=(this.SampleRTT == 0 ? this.estimatedRTT : (long) ((1-ALPHA)*this.estimatedRTT+ALPHA*this.SampleRTT));
 			this.estimatedRTT=0;
 //			Main.debug("new SampleRTT:"+this.SampleRTT);
+		}else{
+			Main.error("RTT function something went really wrong! Check me out FELIX!");
 		}
 	}
 	
+	/**
+	 * Returns the UserStats
+	 */
 	public UserStats getStats() {
 		return stats.get(this);
 	}
 
+	/**
+	 * Sets username
+	 * @param name
+	 */
 	public void init(String name) {
 		this.name = name;
 	}
 	
+	/**
+	 * The user uuid is null? Not registered?
+	 */
 	public boolean isUnknown() {
 		return this.uuid == null;
 	}
 
+	/**
+	 * Is Tester User?
+	 * Socket null?
+	 */
 	public boolean isTester() {
 		return this.getSocket()==null;
 	}
 	
+	/**
+	 * Registers a new connection to a blank User Object
+	 */
 	public UUID register(RegisterPacket packet) {
 		this.uuid = UUID.randomUUID();
 		this.name = packet.getName();
@@ -216,10 +278,16 @@ public class User {
 			e.printStackTrace();
 		}
 		
-		HashMap<User,UserStats> s = new HashMap<User,UserStats>();
-		s.put(this, getStats());
-		
-		StatsAckPacket stats = new StatsAckPacket(s);
+		this.updateStats();
+		return uuid;
+	}
+
+	/**
+	 * Updates the userstats by everyone who is on the DASHBOARD_PAGE
+	 */
+	private void updateStats(){
+		StatsAckPacket stats = new StatsAckPacket(this);
+
 		State state;
 		for(User user : User.users.values()) {
 			state = user.getState();
@@ -227,17 +295,26 @@ public class User {
 				user.write(stats);
 			}
 		}
-		return uuid;
 	}
 
+	/**
+	 * Path of the original profile picture
+	 */
 	public String getOriginalPath(String format) {
 		return Main.WEBSERVER_PATH + File.separatorChar + "images"+File.separatorChar+"profiles"+File.separatorChar+"original"+File.separatorChar+(isTester() ? getName() : getUuid().toString())+"."+format;
 	}
 	
+	/**
+	 * Path of the rezied profile picture
+	 */
 	public String getPath(ImgSize size) {
 		return Main.WEBSERVER_PATH + File.separatorChar + "images"+File.separatorChar+"profiles"+File.separatorChar+"resize"+File.separatorChar+getUuid().toString()+"_"+size.getSize()+"x"+size.getSize()+".jpg";
 	}
 
+	/**
+	 * Writes an packet to the user
+	 * @param packet
+	 */
 	public void write(Packet packet) {
 		if(isTester())return;
 		if(!isOnline() && !(packet instanceof HandshakeAckPacket))return;
@@ -247,12 +324,20 @@ public class User {
 		}else Main.getServer().write(this, packet);
 	}
 	
+	/**
+	 * Sets the TCP-Socket for the user
+	 */
 	public void setSocket(WebSocket socket) {
 		User.users.remove(this.socket);
 		this.socket=socket;
 		User.users.put(this.socket,this);
 	}
 
+	/**
+	 * Load User by Handshake
+	 * @param packet
+	 * @return
+	 */
 	public User load(HandshakePacket packet) {
 		UUID uuid = packet.getUuid();
 		User found = User.getUser(uuid);
@@ -265,6 +350,7 @@ public class User {
 			found.setSocket(this.socket);
 			found.write(new HandshakeAckPacket(found.getName(), true));
 			found.setState(packet.getState());
+			found.updateStats();
 			EventManager.callEvent(new UserLoggedInEvent(found));
 			return found;
 		}
@@ -285,8 +371,9 @@ public class User {
 						user.setName(rs.getString("name"));
 						User.stats.put(user, new UserStats(user));
 					}
+					boolean accept = count==1;
 					
-					if (count == 1 && user.getName() != null) {
+					if (accept && user.getName() != null) {
 						User.uuids.put(user.uuid, user);
 						user.write(new HandshakeAckPacket(user.getName(), true));
 						user.setState(packet.getState());
@@ -295,13 +382,7 @@ public class User {
 					} else {
 						user.write(new HandshakeAckPacket(false));
 					}
-					boolean accept = count==1;
 					Main.debug("User: "+user.toString()+" Loaded:"+count+" -> "+(accept ? "accepted" : "not accepted"));
-					
-					if(accept) {
-						user.setState(packet.getState());
-						EventManager.callEvent(new UserLoggedInEvent(user));
-					}
 				} catch (SQLException e) {
 					e.printStackTrace();
 				} 
@@ -311,12 +392,18 @@ public class User {
 		return user;
 	}
 	
+	/**
+	 * Removes User from the memory!
+	 */
 	public void remove() {
 		if(this.uuid!=null)User.uuids.remove(this.uuid);
 		User.stats.remove(this);
 		User.users.remove(this.socket);
 	}
 
+	/**
+	 * Gives a String with Details about the User
+	 */
 	public String getDetails() {
 		StringBuilder builder = new StringBuilder();
 		builder.append("\n"+(isTester() ? "Tester" : "User") + " " +getName()+" - "+getUuid().toString()+"\n");
@@ -332,11 +419,19 @@ public class User {
 		return builder.toString();
 	}
 	
+	/**
+	 * Compare the user uuid with another
+	 */
 	public boolean equalsUUID(UUID uuid) {
 		if(uuid==null)return false;
 		return uuid.equals(getUuid());
 	}
 	
+	/**
+	 * Compare the user with another user
+	 * @param u
+	 * @return
+	 */
 	public boolean equals(User u) {
 		if(u==null)return false;
 		return equalsUUID(u.getUuid());

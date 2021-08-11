@@ -31,7 +31,7 @@ public class Countdown extends Stage{
 	public void send(PacketSendEvent ev) {
 		if(ev.getPacket() instanceof CountdownAckPacket) {
 			CountdownAckPacket ack = ((CountdownAckPacket) ev.getPacket());
-			Main.printf("Time Difference "+ev.getUser().getTimeDifference()+"ms from "+ev.getUser().getName());
+			Main.printf(ev.getUser(),"Time Difference "+ev.getUser().getTimeDifference()+"ms");
 			ack.setTime(ack.time - ev.getUser().getTimeDifference());
 		}
 	}
@@ -39,7 +39,7 @@ public class Countdown extends Stage{
 	public int running() {
 		printf("Countdown over...");
 		
-		if(User.getAllStats().size()>=4) {
+		if(User.getPlayingUsers() >= 2) {
 			return Stage.NEXT_STAGE;
 		}else {
 			Stage.currentStage().start();

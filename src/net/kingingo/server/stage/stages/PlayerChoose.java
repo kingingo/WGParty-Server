@@ -2,6 +2,7 @@ package net.kingingo.server.stage.stages;
 
 import java.util.ArrayList;
 
+import net.kingingo.server.Main;
 import net.kingingo.server.event.EventHandler;
 import net.kingingo.server.event.events.UserLoggedInEvent;
 import net.kingingo.server.packets.server.StartMatchPacket;
@@ -59,11 +60,11 @@ public class PlayerChoose extends Stage{
 		return Stage.NEXT_STAGE;
 	}
 	
-	private User pickUser() {
+	private User pickUser() throws NullPointerException{
 		@SuppressWarnings("unchecked") ArrayList<User> list = (ArrayList<User>) this.users.clone();
-		list.removeIf( u -> (u.equals(this.u1) || u.equals(this.u2)));
+		list.removeIf( u -> (u.isTester()));
 		
-		if(list.isEmpty())new NullPointerException("List ist empty?!");
+		if(list.isEmpty())throw new ArrayIndexOutOfBoundsException("List ist empty?!");
 		return list.get(Utils.randInt(0, list.size()-1));
 	}
 	
@@ -77,12 +78,17 @@ public class PlayerChoose extends Stage{
 				this.users.add(users[i]);
 		}
 		
-		this.u1 = (u1 == null ? pickUser() : u1);
-		this.u2 = (u2 == null ? pickUser() : u2);
+		try{
+			this.u1 = (u1 == null ? pickUser() : u1);
+			this.u2 = (u2 == null ? pickUser() : u2);
 		
-		StartMatchPacket start = new StartMatchPacket(this.u1,this.u2,this.users);
-		broadcast(start);
-		printf("Choose Player with "+this.u1.getName()+" "+this.u2.getName());
+			StartMatchPacket start = new StartMatchPacket(this.u1,this.u2,this.users);
+			broadcast(start);
+			printf("Choose Player with "+this.u1.getName()+" "+this.u2.getName());
+		}catch(ArrayIndexOutOfBoundsException e){
+			Main.error("Not enough User for a round");
+			Stage.jump(Countdown.class);
+		}
 	}
 	
 	@Override

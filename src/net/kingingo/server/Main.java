@@ -33,33 +33,19 @@ public class Main {
 	public static UserListener listener = null;
 	public static PingThread pingThread = null;
 	
-	public static void registerCommands() {
+	public static void registerConsole() {
 		Terminal.getInstance();
 		printf("Loaded Terminal");
 		printf("Loading Cmds:");
 		Terminal.loadCommands();
 	}
-	
-	public static boolean loadMySQL() {
-		printf("Loading MySQL...");
-		if(!MySQL.connect("root", "","localhost","test",3306))return false;
-		MySQL.Update("CREATE TABLE IF NOT EXISTS `users` (`uuid` VARCHAR(36),`name` VARCHAR(30));");
-		UserStats.createTable();
-		return true;
-	}
-	
-	public static void main(String[] a) {
-		init();
-		User.createTestUsers();
-	}
-	
-	public static void init() {
-		registerCommands();
-		Packet.loadPackets();
+
+	public static void connectToMySQl() {
 		//Not Connected?
 		boolean con = false;
 		do{
-			con = loadMySQL();
+			printf("Loading MySQL...");
+			con = MySQL.connect("root", "","localhost","test",3306);
 			if(!con) {
 				try {
 					Main.error("Couldn't connect to MySQL...");
@@ -67,9 +53,23 @@ public class Main {
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
+			}else{
+				MySQL.Update("CREATE TABLE IF NOT EXISTS `users` (`uuid` VARCHAR(36),`name` VARCHAR(30));");
+				UserStats.createTable();
 			}
 		}while(!con);
-		
+	}
+	
+	public static void main(String[] a) {
+		registerConsole();
+		connectToMySQl();
+		User.createTestUsers();
+		init();
+	}
+	
+	public static void init() {
+		Packet.loadPackets();
+
 		Main.listener = new UserListener();
 		Main.pingThread = new PingThread();
 		Stage.init();
@@ -93,7 +93,7 @@ public class Main {
 	
 
 	public static void printf(String prefix, String msg) {
-		printf("",prefix,msg);
+		printf("8",prefix,msg);
 	}
 	
 	public static void printf(String color , String prefix, String msg) {
@@ -101,6 +101,6 @@ public class Main {
 	}
 	
 	public static void printf(String msg) {
-		System.out.println(msg);
+		System.out.println("§8"+msg);
 	}
 }

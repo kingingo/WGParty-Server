@@ -57,7 +57,7 @@ public class ColoredChar {
 	public void setColors(String colors){
 		int index = 0;
 		while (index < colors.length()) {
-			if(colors.charAt(index) != '§')
+			if(colors.charAt(index) != ChatColor.COLOR_CHAR)
 				throw new IllegalArgumentException("Unexpected character '"+colors.charAt(index)+"' at index "+index+" in string '"+colors+"'");
 			char charcode = colors.charAt(++index);
 			ChatColor color = ChatColor.getByChar(charcode);
@@ -102,7 +102,7 @@ public class ColoredChar {
 	
 	public String toString(boolean printColor,boolean reset) {
 		if(printColor)
-			return (color != null ? color.toString() : "")+buildModifiers()+Character.toString(character)+(reset ? "§r" : "");
+			return (color != null ? color.toString() : "")+buildModifiers()+Character.toString(character)+(reset ? "ChatColor.COLOR_CHARr" : "");
 		return Character.toString(character);
 	}
 	
