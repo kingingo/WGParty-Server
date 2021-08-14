@@ -1,12 +1,17 @@
 package net.kingingo.server.user;
 
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
+
+import javax.imageio.ImageIO;
 
 import org.java_websocket.WebSocket;
 import org.java_websocket.enums.ReadyState;
@@ -27,6 +32,7 @@ import net.kingingo.server.utils.Callback;
 import net.kingingo.server.utils.Utils;
 
 public class User {
+
 	private static int CONNECT_COUNTER = 0;
 	public static final double ALPHA = 0.125;
 	@Getter
@@ -37,7 +43,6 @@ public class User {
 	public static void broadcast(Packet packet) {
 		broadcast(packet, null);
 	}
-	
 
 	public static void broadcast(Packet packet,State st) {
 		broadcast(packet, st, null);
@@ -52,7 +57,15 @@ public class User {
 			}
 		}
 	}
+
+	public static String getPath() {
+		return Main.WEBSERVER_PATH + File.separatorChar + "images"+File.separatorChar+"profiles"+File.separatorChar+"resize";
+	}
 	
+	public static String getOriginalPath() {
+		return Main.WEBSERVER_PATH + File.separatorChar + "images"+File.separatorChar+"profiles"+File.separatorChar+"original";
+	}
+
 	public static void createTestUsers() {
 		createTestUser("Moritz",8,3);
 		createTestUser("Oskar",7,4);
@@ -62,10 +75,21 @@ public class User {
 		createTestUser("Leon",10,0);
 	}
 	
+	//Lego Profile Picture count, if no pic is there
+	private static int lego_counter = 0;
 	public static User createTestUser(String name,int wins,int loses) {
 		User u = new User(null);
 		u.uuid = UUID.nameUUIDFromBytes(name.getBytes());
 		u.setName(name);
+
+		String format = "png";
+		//Checks whether an Profile Picture is already setted
+		if(!u.hasProfileImage()){
+			Utils.downloadProfile("https://api.randomuser.me/portraits/lego/"+lego_counter+".jpg",name,User.getOriginalPath());
+			format = "jpg";
+			lego_counter++;
+		}
+
 		stats.put(u, new UserStats(u));
 		u.getStats().add("loses", loses);
 		u.getStats().add("wins", wins);
@@ -75,7 +99,7 @@ public class User {
 			Utils.createDirectorie(u.getPath(size));
 		
 		try {
-			String path = u.getOriginalPath("png");
+			String path = u.getOriginalPath(format);
 			for(ImgSize size : ImgSize.values())
 				Utils.resize(new File(path), u.getPath(size),size.getSize(),size.getSize());
 		} catch (IOException e) {
@@ -176,7 +200,7 @@ public class User {
 			this.timeDifference = (long) ((1-ALPHA) * time + ALPHA * this.timeDifference);
 		}
 	}
-	
+
 	public void RTT() {
 		if(!isOnline())return;
 		if(estimatedRTT==0) {
@@ -231,12 +255,22 @@ public class User {
 		return uuid;
 	}
 
+	/**
+	 * Checks whether the Profile Picture exists
+	 * @return Boolean
+	 */
+	public boolean hasProfileImage(){
+		String path = getOriginalPath("png");
+		File file = new File(path);
+		return file.exists();
+	}
+
 	public String getOriginalPath(String format) {
-		return Main.WEBSERVER_PATH + File.separatorChar + "images"+File.separatorChar+"profiles"+File.separatorChar+"original"+File.separatorChar+(isTester() ? getName() : getUuid().toString())+"."+format;
+		return User.getOriginalPath()+File.separatorChar+(isTester() ? getName() : getUuid().toString())+"."+format;
 	}
 	
 	public String getPath(ImgSize size) {
-		return Main.WEBSERVER_PATH + File.separatorChar + "images"+File.separatorChar+"profiles"+File.separatorChar+"resize"+File.separatorChar+getUuid().toString()+"_"+size.getSize()+"x"+size.getSize()+".jpg";
+		return User.getPath()+File.separatorChar+getUuid().toString()+"_"+size.getSize()+"x"+size.getSize()+".jpg";
 	}
 
 	public void write(Packet packet) {
