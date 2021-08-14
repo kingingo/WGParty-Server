@@ -156,6 +156,17 @@ public class User {
 		return this.SampleRTT;
 	}
 	
+	public void updateStats(){
+		StatsAckPacket stats = new StatsAckPacket(this);
+		State state;
+		for(User user : User.users.values()) {
+			state = user.getState();
+			if(state == State.DASHBOARD_PAGE && user.getUuid() != this.uuid) {
+				user.write(stats);
+			}
+		}
+	}
+
 	public void setTimeDifference(long time) {
 		time -= - getRTT();
 		if(!isOnline())return;
@@ -216,17 +227,7 @@ public class User {
 			e.printStackTrace();
 		}
 		
-		HashMap<User,UserStats> s = new HashMap<User,UserStats>();
-		s.put(this, getStats());
-		
-		StatsAckPacket stats = new StatsAckPacket(s);
-		State state;
-		for(User user : User.users.values()) {
-			state = user.getState();
-			if(state == State.DASHBOARD_PAGE && user.getUuid() != this.uuid) {
-				user.write(stats);
-			}
-		}
+		updateStats();
 		return uuid;
 	}
 
@@ -265,6 +266,7 @@ public class User {
 			found.setSocket(this.socket);
 			found.write(new HandshakeAckPacket(found.getName(), true));
 			found.setState(packet.getState());
+			found.updateStats();
 			EventManager.callEvent(new UserLoggedInEvent(found));
 			return found;
 		}
@@ -290,7 +292,7 @@ public class User {
 						User.uuids.put(user.uuid, user);
 						user.write(new HandshakeAckPacket(user.getName(), true));
 						user.setState(packet.getState());
-						updateStats();
+						user.updateStats();
 						EventManager.callEvent(new UserLoggedInEvent(user));
 					} else {
 						user.write(new HandshakeAckPacket(false));
