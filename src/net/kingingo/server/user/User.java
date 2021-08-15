@@ -1,13 +1,18 @@
 package net.kingingo.server.user;
 
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
+
+import javax.imageio.ImageIO;
 
 import org.java_websocket.WebSocket;
 import org.java_websocket.enums.ReadyState;
@@ -28,6 +33,7 @@ import net.kingingo.server.utils.Callback;
 import net.kingingo.server.utils.Utils;
 
 public class User {
+
 	private static int CONNECT_COUNTER = 0;
 	public static final double ALPHA = 0.125;
 	@Getter
@@ -38,7 +44,6 @@ public class User {
 	public static void broadcast(Packet packet) {
 		broadcast(packet, null);
 	}
-	
 
 	public static void broadcast(Packet packet,State st) {
 		broadcast(packet, st, null);
@@ -53,7 +58,15 @@ public class User {
 			}
 		}
 	}
+
+	public static String getPath() {
+		return Main.WEBSERVER_PATH + File.separatorChar + "images"+File.separatorChar+"profiles"+File.separatorChar+"resize";
+	}
 	
+	public static String getOriginalPath() {
+		return Main.WEBSERVER_PATH + File.separatorChar + "images"+File.separatorChar+"profiles"+File.separatorChar+"original";
+	}
+
 	public static void createTestUsers() {
 		createTestUser("Moritz",8,3);
 		createTestUser("Oskar",7,4);
@@ -63,10 +76,21 @@ public class User {
 		createTestUser("Leon",10,0);
 	}
 	
+	//Lego Profile Picture count, if no pic is there
+	private static int lego_counter = 0;
 	public static User createTestUser(String name,int wins,int loses) {
 		User u = new User(null);
 		u.uuid = UUID.nameUUIDFromBytes(name.getBytes());
 		u.setName(name);
+
+		String format = "png";
+		//Checks whether an Profile Picture is already setted
+		if(!u.hasProfileImage()){
+			Utils.downloadProfile("https://api.randomuser.me/portraits/lego/"+lego_counter+".jpg",name,User.getOriginalPath());
+			format = "jpg";
+			lego_counter++;
+		}
+
 		stats.put(u, new UserStats(u));
 		u.getStats().add("loses", loses);
 		u.getStats().add("wins", wins);
@@ -76,7 +100,7 @@ public class User {
 			Utils.createDirectorie(u.getPath(size));
 		
 		try {
-			String path = u.getOriginalPath("png");
+			String path = u.getOriginalPath(format);
 			for(ImgSize size : ImgSize.values())
 				Utils.resize(new File(path), u.getPath(size),size.getSize(),size.getSize());
 		} catch (IOException e) {
@@ -183,6 +207,7 @@ public class User {
 		return this.SampleRTT;
 	}
 	
+<<<<<<< HEAD
 	/**
 	 * Sets Time Differece bewtween Client and Server!
 	 * calc Alg: timeDiff = (1-ALPHA) * diff + ALPHA * timeDiff;
@@ -191,6 +216,21 @@ public class User {
 	 */
 	public void setTimeDifference(long diff) {
 		diff += (getRTT()/2);
+=======
+	public void updateStats(){
+		StatsAckPacket stats = new StatsAckPacket(this);
+		State state;
+		for(User user : User.users.values()) {
+			state = user.getState();
+			if(state == State.DASHBOARD_PAGE && user.getUuid() != this.uuid) {
+				user.write(stats);
+			}
+		}
+	}
+
+	public void setTimeDifference(long time) {
+		time -= - getRTT();
+>>>>>>> a57bf6608841ba93d67524ef2a9b4f4140543ad3
 		if(!isOnline())return;
 		if(timeDifference == 0) {
 			timeDifference = diff;
@@ -198,6 +238,7 @@ public class User {
 			this.timeDifference = (long) ((1-ALPHA) * diff + ALPHA * this.timeDifference);
 		}
 	}
+<<<<<<< HEAD
 	
 	/**
 	 * Calculates the RTT (=Round Trip Time) 
@@ -210,6 +251,10 @@ public class User {
 	 * estimatedRTT = 0;
 	 */
 	public void RTT(boolean start) {
+=======
+
+	public void RTT() {
+>>>>>>> a57bf6608841ba93d67524ef2a9b4f4140543ad3
 		if(!isOnline())return;
 		if(estimatedRTT==0 && start) {
 			this.estimatedRTT = System.currentTimeMillis();
@@ -278,6 +323,7 @@ public class User {
 			e.printStackTrace();
 		}
 		
+<<<<<<< HEAD
 		this.updateStats();
 		return uuid;
 	}
@@ -300,15 +346,31 @@ public class User {
 	/**
 	 * Path of the original profile picture
 	 */
+=======
+		updateStats();
+		return uuid;
+	}
+
+	/**
+	 * Checks whether the Profile Picture exists
+	 * @return Boolean
+	 */
+	public boolean hasProfileImage(){
+		String path = getOriginalPath("png");
+		File file = new File(path);
+		return file.exists();
+	}
+
+>>>>>>> a57bf6608841ba93d67524ef2a9b4f4140543ad3
 	public String getOriginalPath(String format) {
-		return Main.WEBSERVER_PATH + File.separatorChar + "images"+File.separatorChar+"profiles"+File.separatorChar+"original"+File.separatorChar+(isTester() ? getName() : getUuid().toString())+"."+format;
+		return User.getOriginalPath()+File.separatorChar+(isTester() ? getName() : getUuid().toString())+"."+format;
 	}
 	
 	/**
 	 * Path of the rezied profile picture
 	 */
 	public String getPath(ImgSize size) {
-		return Main.WEBSERVER_PATH + File.separatorChar + "images"+File.separatorChar+"profiles"+File.separatorChar+"resize"+File.separatorChar+getUuid().toString()+"_"+size.getSize()+"x"+size.getSize()+".jpg";
+		return User.getPath()+File.separatorChar+getUuid().toString()+"_"+size.getSize()+"x"+size.getSize()+".jpg";
 	}
 
 	/**
@@ -377,7 +439,7 @@ public class User {
 						User.uuids.put(user.uuid, user);
 						user.write(new HandshakeAckPacket(user.getName(), true));
 						user.setState(packet.getState());
-						updateStats();
+						user.updateStats();
 						EventManager.callEvent(new UserLoggedInEvent(user));
 					} else {
 						user.write(new HandshakeAckPacket(false));
