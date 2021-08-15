@@ -207,7 +207,6 @@ public class User {
 		return this.SampleRTT;
 	}
 	
-<<<<<<< HEAD
 	/**
 	 * Sets Time Differece bewtween Client and Server!
 	 * calc Alg: timeDiff = (1-ALPHA) * diff + ALPHA * timeDiff;
@@ -216,21 +215,6 @@ public class User {
 	 */
 	public void setTimeDifference(long diff) {
 		diff += (getRTT()/2);
-=======
-	public void updateStats(){
-		StatsAckPacket stats = new StatsAckPacket(this);
-		State state;
-		for(User user : User.users.values()) {
-			state = user.getState();
-			if(state == State.DASHBOARD_PAGE && user.getUuid() != this.uuid) {
-				user.write(stats);
-			}
-		}
-	}
-
-	public void setTimeDifference(long time) {
-		time -= - getRTT();
->>>>>>> a57bf6608841ba93d67524ef2a9b4f4140543ad3
 		if(!isOnline())return;
 		if(timeDifference == 0) {
 			timeDifference = diff;
@@ -238,7 +222,6 @@ public class User {
 			this.timeDifference = (long) ((1-ALPHA) * diff + ALPHA * this.timeDifference);
 		}
 	}
-<<<<<<< HEAD
 	
 	/**
 	 * Calculates the RTT (=Round Trip Time) 
@@ -251,10 +234,6 @@ public class User {
 	 * estimatedRTT = 0;
 	 */
 	public void RTT(boolean start) {
-=======
-
-	public void RTT() {
->>>>>>> a57bf6608841ba93d67524ef2a9b4f4140543ad3
 		if(!isOnline())return;
 		if(estimatedRTT==0 && start) {
 			this.estimatedRTT = System.currentTimeMillis();
@@ -323,7 +302,6 @@ public class User {
 			e.printStackTrace();
 		}
 		
-<<<<<<< HEAD
 		this.updateStats();
 		return uuid;
 	}
@@ -344,14 +322,6 @@ public class User {
 	}
 
 	/**
-	 * Path of the original profile picture
-	 */
-=======
-		updateStats();
-		return uuid;
-	}
-
-	/**
 	 * Checks whether the Profile Picture exists
 	 * @return Boolean
 	 */
@@ -361,7 +331,9 @@ public class User {
 		return file.exists();
 	}
 
->>>>>>> a57bf6608841ba93d67524ef2a9b4f4140543ad3
+	/**
+	 * Path of the original profile picture
+	 */
 	public String getOriginalPath(String format) {
 		return User.getOriginalPath()+File.separatorChar+(isTester() ? getName() : getUuid().toString())+"."+format;
 	}
