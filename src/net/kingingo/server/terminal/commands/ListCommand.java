@@ -22,7 +22,8 @@ public class ListCommand implements CommandExecutor{
 		User[] list = User.getAllStats().keySet().toArray(new User[0]);
 		String users = "";
 		for(int i = 0; i < list.length; i++) {
-			users+=list[i].getName() + (list[i].isTester() ? "(T)" : "") + ((i+1) == list.length ? "" : (i == (list.length-2) ? " and " : ","));
+			if(list[i].isOnline())
+				users+=list[i].getName() + (list[i].isTester() ? "(T)" : "") + ((i+1) == list.length ? "" : (i == (list.length-2) ? " and " : ","));
 		}
 		Main.printf(users);
 	}
